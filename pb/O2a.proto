@@ -1,0 +1,43 @@
+syntax = "proto3";
+package cloudray.agent.o2a;
+option ruby_package = "AgentPb::O2a";
+
+enum ErrorType {
+  ERROR_UNKNOWN = 0;
+
+  ERROR_INTERNAL_SERVER = 1;
+  ERROR_PROTOBUF_PARSE = 2;
+  ERROR_MESSAGE_NOT_ALLOWED_IN_HANDSHAKE = 4;
+
+  ERROR_AGENT_TOKEN_INVALID = 11;
+  ERROR_AGENT_TOKEN_EXPIRED = 12;
+}
+
+message Error {
+  ErrorType error_type = 1;
+  string error_description = 2;
+}
+
+message AuthResult {
+  bool auth_success = 1;
+  string agent_token = 2;
+}
+
+message RunRunlog {
+  uint64 runlog_id = 1;
+  string parsed_script = 2;
+}
+
+message O2aMessage {
+  oneof o2a_payload {
+    Error error = 100;
+
+    AuthResult auth_result = 101;
+
+    RunRunlog run_runlog = 201;
+  }
+}
+
+message O2aRoot {
+  repeated O2aMessage o2a_messages = 11;
+}

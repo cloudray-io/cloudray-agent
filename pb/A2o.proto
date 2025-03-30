@@ -1,0 +1,86 @@
+syntax = "proto3";
+package cloudray.agent.a2o;
+option ruby_package = "AgentPb::A2o";
+
+message Version {
+  uint32 major = 1;
+  uint32 minor = 2;
+  uint32 patch = 3;
+}
+
+enum ErrorType {
+  ERROR_UNKNOWN = 0;
+}
+
+enum OperatingSystemFamily {
+  OS_UNKNOWN = 0;
+
+  OS_LINUX = 1;
+  OS_WINDOWS = 2;
+  OS_MAC = 3;
+}
+
+message Error {
+  ErrorType error_type = 1;
+  string error_description = 2;
+}
+
+message AuthRequestToken {
+  string reg_code = 1;
+  //  string machine_id = 2;
+  //  string agent_ip = 3
+  //
+  //  OperatingSystemFamily os_family = 11;
+  //  string os_name = 12;
+  //  string os_version = 13;
+}
+
+message RunlogStarted {
+  uint64 runlog_id = 1;
+  uint64 started_at_ts = 2;
+}
+
+enum RunlogFailReason {
+  RFR_UNKNOWN = 0;
+
+  RFR_TIMEOUT = 1;
+}
+
+message RunlogFailed {
+  uint64 runlog_id = 1;
+  uint64 failed_at_ts = 2;
+  RunlogFailReason fail_reason = 3;
+}
+
+message RunlogFinished {
+  uint64 runlog_id = 1;
+  uint64 finished_at_ts = 2;
+  int32 exit_code = 3;
+}
+
+message RunlogOutputFragment {
+  uint64 runlog_id = 1;
+  uint64 output_at_ts = 2;
+  bool is_stderr = 3;
+  bytes output_fragment = 4;
+}
+
+message A2oMessage {
+  oneof a2o_payload {
+    Error error = 100;
+
+    AuthRequestToken auth_request_token = 101;
+
+    RunlogStarted runlog_started = 201;
+    RunlogOutputFragment runlog_output_fragment = 202;
+    RunlogFailed runlog_failed = 203;
+    RunlogFinished runlog_finished = 204;
+  }
+}
+
+message A2oRoot {
+  string agent_token = 1;
+  Version agent_version = 2;
+
+  repeated A2oMessage a2o_messages = 11;
+}
