@@ -57,8 +57,8 @@ pub struct RunlogOutputFragment {
     pub runlog_id: u64,
     #[prost(uint64, tag = "2")]
     pub output_at_ts: u64,
-    #[prost(bool, tag = "3")]
-    pub is_stderr: bool,
+    #[prost(enumeration = "OutputStreamType", tag = "3")]
+    pub stream_type: i32,
     #[prost(bytes = "vec", tag = "4")]
     pub output_fragment: ::prost::alloc::vec::Vec<u8>,
 }
@@ -171,6 +171,32 @@ impl RunlogFailReason {
         match value {
             "RFR_UNKNOWN" => Some(Self::RfrUnknown),
             "RFR_TIMEOUT" => Some(Self::RfrTimeout),
+            _ => None,
+        }
+    }
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum OutputStreamType {
+    OstStdout = 0,
+    OstStderr = 1,
+}
+impl OutputStreamType {
+    /// String value of the enum field names used in the ProtoBuf definition.
+    ///
+    /// The values are not transformed in any way and thus are considered stable
+    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    pub fn as_str_name(&self) -> &'static str {
+        match self {
+            Self::OstStdout => "OST_STDOUT",
+            Self::OstStderr => "OST_STDERR",
+        }
+    }
+    /// Creates an enum from field names used in the ProtoBuf definition.
+    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+        match value {
+            "OST_STDOUT" => Some(Self::OstStdout),
+            "OST_STDERR" => Some(Self::OstStderr),
             _ => None,
         }
     }

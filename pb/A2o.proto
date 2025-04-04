@@ -58,10 +58,15 @@ message RunlogFinished {
   int32 exit_code = 3;
 }
 
+enum OutputStreamType {
+  OST_STDOUT = 0;
+  OST_STDERR = 1;
+}
+
 message RunlogOutputFragment {
   uint64 runlog_id = 1;
   uint64 output_at_ts = 2;
-  bool is_stderr = 3;
+  OutputStreamType stream_type = 3;
   bytes output_fragment = 4;
 }
 
