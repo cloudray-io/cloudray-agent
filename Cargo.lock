@@ -187,7 +187,7 @@ checksum = "f46ad14479a25103f283c0f10005961cf086d8dc42205bb44c46ac563475dca6"
 
 [[package]]
 name = "cloudray-agent"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "anyhow",
  "bytes",
@@ -702,11 +702,10 @@ dependencies = [
 
 [[package]]
 name = "pty-process"
-version = "0.4.0"
+version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8749b545e244c90bf74a5767764cc2194f1888bb42f84015486a64c82bea5cc0"
+checksum = "8277b026e63da5d2cc435f842b52bedb1d050dfd7d633bba009c3c8e1883a21e"
 dependencies = [
- "libc",
  "rustix",
  "tokio",
 ]
