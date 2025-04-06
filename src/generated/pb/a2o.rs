@@ -17,14 +17,27 @@ pub struct Error {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AuthRequestToken {
-    ///   string machine_id = 2;
-    ///   string agent_ip = 3
-    ///
-    ///   OperatingSystemFamily os_family = 11;
-    ///   string os_name = 12;
-    ///   string os_version = 13;
     #[prost(string, tag = "1")]
     pub reg_code: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub machine_uid: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub machine_name: ::prost::alloc::string::String,
+    /// full list: <https://doc.rust-lang.org/std/env/consts/constant.OS.html>
+    /// can be empty (e.g., for WASM)
+    #[prost(string, tag = "11")]
+    pub os_family: ::prost::alloc::string::String,
+    /// full list: <https://doc.rust-lang.org/std/env/consts/constant.OS.html>
+    /// can be empty (e.g., for WASM)
+    #[prost(string, tag = "12")]
+    pub os_name: ::prost::alloc::string::String,
+    #[prost(string, tag = "13")]
+    pub os_distro: ::prost::alloc::string::String,
+    #[prost(string, tag = "14")]
+    pub os_version: ::prost::alloc::string::String,
+    /// full list: <https://doc.rust-lang.org/std/env/consts/constant.ARCH.html>
+    #[prost(string, tag = "15")]
+    pub os_arch: ::prost::alloc::string::String,
 }
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct RunlogStarted {
@@ -113,38 +126,6 @@ impl ErrorType {
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
             "ERROR_UNKNOWN" => Some(Self::ErrorUnknown),
-            _ => None,
-        }
-    }
-}
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
-#[repr(i32)]
-pub enum OperatingSystemFamily {
-    OsUnknown = 0,
-    OsLinux = 1,
-    OsWindows = 2,
-    OsMac = 3,
-}
-impl OperatingSystemFamily {
-    /// String value of the enum field names used in the ProtoBuf definition.
-    ///
-    /// The values are not transformed in any way and thus are considered stable
-    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
-    pub fn as_str_name(&self) -> &'static str {
-        match self {
-            Self::OsUnknown => "OS_UNKNOWN",
-            Self::OsLinux => "OS_LINUX",
-            Self::OsWindows => "OS_WINDOWS",
-            Self::OsMac => "OS_MAC",
-        }
-    }
-    /// Creates an enum from field names used in the ProtoBuf definition.
-    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
-        match value {
-            "OS_UNKNOWN" => Some(Self::OsUnknown),
-            "OS_LINUX" => Some(Self::OsLinux),
-            "OS_WINDOWS" => Some(Self::OsWindows),
-            "OS_MAC" => Some(Self::OsMac),
             _ => None,
         }
     }

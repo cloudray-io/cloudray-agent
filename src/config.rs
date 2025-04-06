@@ -1,13 +1,24 @@
 use crate::args::Args;
+use crate::types::AgentToken;
+use clap::Parser;
+use std::sync::LazyLock;
+use tokio::sync::RwLock;
 
 const ORIGIN_HOST: &str = "api.cloudray.io";
+
+pub static AGENT_TOKEN: LazyLock<RwLock<Option<AgentToken>>> = LazyLock::new(|| RwLock::new(None));
+
+pub static CONFIG: LazyLock<Config> = LazyLock::new(|| {
+    let args = Args::parse();
+    Config::new(args)
+});
 
 pub struct Config {
     args: Args,
 }
 
 impl Config {
-    pub fn new(args: Args) -> Self {
+    fn new(args: Args) -> Self {
         Self { args }
     }
 

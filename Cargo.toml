@@ -13,7 +13,6 @@ bytes = "1.10.1"
 clap = { version = "4.5.32", features = ["derive", "env"] }
 daemonize = "0.5.0"
 futures = "0.3.31"
-hostname = "0.4.0"
 mac_address = "1.1.8"
 prost = "0.13.5"
 reqwest = "0.12.15"
@@ -25,6 +24,10 @@ tokio-tungstenite = { version = "0.26.2", features = ["native-tls"] }
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
 webterm-core = "0.2.5"
+sysinfo = "0.34.2"
 
 [build-dependencies]
 prost-build = "0.13.5"
+
+[dev-dependencies]
+serial_test = "3.2.0"

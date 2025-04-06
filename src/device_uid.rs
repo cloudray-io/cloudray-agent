@@ -3,6 +3,7 @@ use std::env;
 use std::fs;
 #[cfg(any(target_os = "macos", target_os = "windows"))]
 use std::process::Command;
+use sysinfo::System;
 
 #[allow(dead_code)]
 #[derive(Debug)]
@@ -102,10 +103,8 @@ pub fn device_uid() -> Option<(DeviceUidType, String)> {
         return Some((DeviceUidType::MacAddress, mac.to_string()));
     }
 
-    if let Ok(hostname) = hostname::get() {
-        if let Some(host) = hostname.to_str() {
-            return Some((DeviceUidType::Hostname, host.to_string()));
-        }
+    if let Some(hostname) = System::host_name() {
+        return Some((DeviceUidType::Hostname, hostname));
     }
 
     None

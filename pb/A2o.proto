@@ -12,14 +12,6 @@ enum ErrorType {
   ERROR_UNKNOWN = 0;
 }
 
-enum OperatingSystemFamily {
-  OS_UNKNOWN = 0;
-
-  OS_LINUX = 1;
-  OS_WINDOWS = 2;
-  OS_MAC = 3;
-}
-
 message Error {
   ErrorType error_type = 1;
   string error_description = 2;
@@ -27,12 +19,19 @@ message Error {
 
 message AuthRequestToken {
   string reg_code = 1;
-  //  string machine_id = 2;
-  //  string agent_ip = 3
-  //
-  //  OperatingSystemFamily os_family = 11;
-  //  string os_name = 12;
-  //  string os_version = 13;
+  string machine_uid = 2;
+  string machine_name = 3;
+
+  // full list: https://doc.rust-lang.org/std/env/consts/constant.OS.html
+  // can be empty (e.g., for WASM)
+  string os_family = 11;
+  // full list: https://doc.rust-lang.org/std/env/consts/constant.OS.html
+  // can be empty (e.g., for WASM)
+  string os_name = 12;
+  string os_distro = 13;
+  string os_version = 14;
+  // full list: https://doc.rust-lang.org/std/env/consts/constant.ARCH.html
+  string os_arch = 15;
 }
 
 message RunlogStarted {

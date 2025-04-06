@@ -1,12 +1,11 @@
-use crate::config::Config;
+use crate::config::CONFIG;
 use crate::generated::pb::o2a::O2aRoot;
 use crate::message_queue::MessageQueue;
 use crate::net::receive::receive_messages;
 use crate::types::AgentToken;
-use std::sync::Arc;
 
-pub async fn talk(config: &Arc<Config>, agent_token: &AgentToken) -> anyhow::Result<O2aRoot> {
-    let url = config.agent_v1_talk_endpoint();
+pub async fn talk(agent_token: &AgentToken) -> anyhow::Result<O2aRoot> {
+    let url = CONFIG.agent_v1_talk_endpoint();
 
     let mut payloads = Vec::new();
 
