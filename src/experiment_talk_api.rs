@@ -1,7 +1,6 @@
 use crate::config::Config;
 use crate::generated::pb::o2a::o2a_message::O2aPayload;
 use crate::net::handshake::fetch_agent_token;
-use crate::net::receive::receive_messages;
 use crate::net::talk::talk;
 use crate::o2a_messages::run_runlog::process_run_runlog;
 use std::sync::Arc;

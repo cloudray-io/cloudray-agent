@@ -21,7 +21,7 @@ impl Config {
         self.args
             .origin_host
             .as_ref()
-            .unwrap_or_else(|| default_host)
+            .unwrap_or(default_host)
             .to_string()
     }
 

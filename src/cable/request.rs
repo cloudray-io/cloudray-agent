@@ -26,7 +26,7 @@ impl Request {
     pub fn new_subscribe<T: Serialize>(identifier: T) -> Result<Self, serde_json::Error> {
         let value = serde_json::to_value(&identifier)?;
 
-        if value.is_object() && !value.get("channel").is_some() {
+        if value.is_object() && value.get("channel").is_none() {
             return Err(serde_json::Error::custom(
                 "identifier must contain 'channel' key",
             ));

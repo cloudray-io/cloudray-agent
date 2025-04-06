@@ -1,5 +1,5 @@
 use serde_json::Value;
-use tokio_tungstenite::tungstenite::{connect, Message};
+use tokio_tungstenite::tungstenite::Message;
 use tracing::info;
 
 #[derive(serde::Deserialize)]

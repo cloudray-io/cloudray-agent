@@ -68,7 +68,7 @@ pub async fn process_run_runlog(message: RunRunlog) -> anyhow::Result<()> {
             MessageQueue::push(A2oPayload::RunlogFinished(RunlogFinished {
                 runlog_id,
                 finished_at_ts: current_timestamp_secs()?,
-                exit_code: status.code().unwrap_or(-1) as i32,
+                exit_code: status.code().unwrap_or(-1),
             }))
             .await;
         }

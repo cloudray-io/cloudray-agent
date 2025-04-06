@@ -18,7 +18,6 @@ use crate::args::Args;
 use crate::config::Config;
 use crate::daemonise::daemonise;
 use crate::experiment_talk_api::start;
-use crate::panic_error::PanicError;
 use anyhow::anyhow;
 use clap::Parser;
 use std::sync::Arc;
