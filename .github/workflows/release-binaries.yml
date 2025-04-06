@@ -1,0 +1,39 @@
+name: Release Binaries
+
+permissions:
+  pull-requests: write
+  contents: write
+
+on:
+  push:
+    tags:
+      - v[0-9]+.*
+
+jobs:
+  upload-binaries:
+    strategy:
+      matrix:
+        target:
+          - name: x86_64-unknown-linux-gnu
+            os: ubuntu-24.04
+          - name: aarch64-unknown-linux-gnu
+            os: ubuntu-24.04-arm
+
+    runs-on: ${{ matrix.target.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Debug environment
+        run: |
+          echo "Tag:          $GITHUB_REF_NAME"
+          echo "Ref:          $GITHUB_REF"
+          echo "Target:       ${{ matrix.target.name }}"
+          echo "OS:           ${{ matrix.target.os }}"
+
+      - uses: taiki-e/upload-rust-binary-action@v1
+        with:
+          bin: cloudray-agent
+          target: ${{ matrix.target.name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
