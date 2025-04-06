@@ -3,6 +3,7 @@ name = "cloudray-agent"
 version = "0.0.1"
 edition = "2021"
 rust-version = "1.83.0"
+description = "Agent for CloudRay, a server management & monitoring service. Learn more at https://cloudray.io"
 license = "MIT"
 repository = "https://github.com/cloudray-io/cloudray-agent"
 
