@@ -18,10 +18,12 @@ pub enum CommandType {
     Other(String),
 }
 
+#[allow(dead_code)]
 pub struct Request {
     pub payload: RequestPayload,
 }
 
+#[allow(dead_code)]
 impl Request {
     pub fn new_subscribe<T: Serialize>(identifier: T) -> Result<Self, serde_json::Error> {
         let value = serde_json::to_value(&identifier)?;

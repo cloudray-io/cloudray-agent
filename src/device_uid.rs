@@ -4,6 +4,7 @@ use std::fs;
 #[cfg(any(target_os = "macos", target_os = "windows"))]
 use std::process::Command;
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub enum DeviceUidType {
     MachineId,
@@ -13,6 +14,7 @@ pub enum DeviceUidType {
     Hostname,
 }
 
+#[allow(dead_code)]
 pub fn device_uid_as_string() -> Option<String> {
     let uid = device_uid();
 
@@ -28,6 +30,7 @@ pub fn device_uid_as_string() -> Option<String> {
     })
 }
 
+#[allow(dead_code)]
 pub fn device_uid() -> Option<(DeviceUidType, String)> {
     #[cfg(target_os = "linux")]
     {

@@ -1,7 +1,6 @@
 use crate::args::Args;
 
 const ORIGIN_HOST: &str = "api.cloudray.io";
-const TEST_AGENT_TOKEN: &str = "test";
 
 pub struct Config {
     args: Args,
@@ -29,13 +28,11 @@ impl Config {
         !self.origin_host().starts_with("localhost")
     }
 
+    #[allow(dead_code)]
     pub fn cable_endpoint(&self) -> String {
         let host = self.origin_host();
         let scheme = if self.use_https() { "wss" } else { "ws" };
-        format!(
-            "{}://{}/cable?agent_token={}",
-            scheme, host, TEST_AGENT_TOKEN
-        )
+        format!("{}://{}/cable", scheme, host)
     }
 
     fn agent_v1_endpoint(&self) -> String {

@@ -7,7 +7,7 @@ fn main() -> Result<()> {
     if pb_env == "1" {
         generate_pb()?;
     } else {
-        println!("cargo:warning=Skipping protobuf generation");
+        // println!("cargo:warning=Skipping protobuf generation");
     }
 
     Ok(())
