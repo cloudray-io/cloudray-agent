@@ -2,13 +2,13 @@ use crate::cable::request::Request;
 use crate::cable::response::Response;
 use crate::config::Config;
 use anyhow::anyhow;
-use bytes::Bytes;
 use futures::{SinkExt, StreamExt};
 use std::sync::Arc;
 use tokio_tungstenite::connect_async;
-use tokio_tungstenite::tungstenite::{connect, Message};
+use tokio_tungstenite::tungstenite::Message;
 use tracing::{error, info};
 
+#[allow(dead_code)]
 pub async fn start(config: Arc<Config>) -> anyhow::Result<()> {
     let cable_url = config.cable_endpoint();
 
