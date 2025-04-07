@@ -1,7 +1,8 @@
 use serde_json::Value;
-use tokio_tungstenite::tungstenite::{connect, Message};
+use tokio_tungstenite::tungstenite::Message;
 use tracing::info;
 
+#[allow(dead_code)]
 #[derive(serde::Deserialize)]
 pub struct ResponsePayload {
     pub r#type: Option<String>,
@@ -9,6 +10,7 @@ pub struct ResponsePayload {
     pub identifier: Option<String>,
 }
 
+#[allow(dead_code)]
 #[derive(serde::Deserialize)]
 #[serde(tag = "type")]
 enum MessageType {
@@ -40,10 +42,12 @@ impl TryFrom<Message> for ResponsePayload {
     }
 }
 
+#[allow(dead_code)]
 pub struct Response {
     pub payload: ResponsePayload,
 }
 
+#[allow(dead_code)]
 impl Response {
     pub fn new(message: Message) -> anyhow::Result<Self> {
         info!("Received:");
