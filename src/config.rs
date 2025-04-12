@@ -2,9 +2,16 @@ use crate::args::Args;
 use crate::types::AgentToken;
 use clap::Parser;
 use std::sync::LazyLock;
+use std::time::Duration;
 use tokio::sync::RwLock;
+use tracing::error;
 
 const ORIGIN_HOST: &str = "api.cloudray.io";
+
+pub const CPU_SAMPLE_INTERVAL: Duration = Duration::from_secs(5);
+pub const CPU_MAX_SAMPLES: usize = 12;
+pub const COLLECT_METRICS_EVERY: Duration = Duration::from_secs(60);
+pub const REPORT_EVERY: Duration = Duration::from_secs(30);
 
 pub static AGENT_TOKEN: LazyLock<RwLock<Option<AgentToken>>> = LazyLock::new(|| RwLock::new(None));
 
@@ -15,15 +22,34 @@ pub static CONFIG: LazyLock<Config> = LazyLock::new(|| {
 
 pub struct Config {
     args: Args,
+    origin_client: reqwest::Client,
 }
 
 impl Config {
     fn new(args: Args) -> Self {
-        Self { args }
+        let origin_client = reqwest::Client::builder()
+            .timeout(Duration::from_secs(30))
+            .build()
+            .unwrap_or({
+                error!("Failed to create custom reqwest::Client, falling back to default client");
+                reqwest::Client::new()
+            });
+        Self {
+            args,
+            origin_client,
+        }
     }
 
     pub fn reg_code(&self) -> &String {
         &self.args.reg_code
+    }
+
+    // Initialise the reqwest::Client only once and reuse it for each request for following benefits:
+    // 1. Let reqwest keep the connection alive using Keep-Alive header (or HTTP/2?)
+    // 2. Reduce the time SSL negotiation happens
+    // 3. Reduce the number of DNS lookups
+    pub fn origin_client(&self) -> &reqwest::Client {
+        &self.origin_client
     }
 
     pub fn origin_host(&self) -> String {
@@ -46,18 +72,10 @@ impl Config {
         format!("{}://{}/cable", scheme, host)
     }
 
-    fn agent_v1_endpoint(&self) -> String {
+    pub fn agent_v1_endpoint(&self) -> String {
         let host = self.origin_host();
         let scheme = if self.use_https() { "https" } else { "http" };
-        format!("{}://{}/agent/v1", scheme, host)
-    }
-
-    pub fn agent_v1_handshake_endpoint(&self) -> String {
-        self.agent_v1_endpoint() + "/handshake"
-    }
-
-    pub fn agent_v1_talk_endpoint(&self) -> String {
-        self.agent_v1_endpoint() + "/talk"
+        format!("{}://{}/agent/v1/report", scheme, host)
     }
 
     #[inline]

@@ -1,10 +1,12 @@
 use crate::config::AGENT_TOKEN;
 use crate::generated::pb::o2a::AuthResult;
 use crate::types::AgentToken;
+use tracing::info;
 
 pub async fn process_auth_result(message: AuthResult) -> anyhow::Result<()> {
     let token = message.agent_token;
     *AGENT_TOKEN.write().await = Some(AgentToken(token));
+    info!("Machine is registered on: {}", message.machine_url);
     Ok(())
 }
 
@@ -19,7 +21,7 @@ mod tests {
         let test_token = "test_token".to_string();
         let auth_result = AuthResult {
             agent_token: test_token.clone(),
-            auth_success: true,
+            machine_url: "".to_string(),
         };
 
         let result = process_auth_result(auth_result).await;
@@ -40,7 +42,7 @@ mod tests {
         let new_token = "new_token".to_string();
         let auth_result = AuthResult {
             agent_token: new_token.clone(),
-            auth_success: true,
+            machine_url: "".to_string(),
         };
 
         let result = process_auth_result(auth_result).await;

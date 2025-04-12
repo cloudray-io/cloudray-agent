@@ -23,6 +23,8 @@ pub struct AuthRequestToken {
     pub machine_uid: ::prost::alloc::string::String,
     #[prost(string, tag = "3")]
     pub machine_name: ::prost::alloc::string::String,
+    #[prost(message, optional, tag = "4")]
+    pub agent_version: ::core::option::Option<Version>,
     /// full list: <https://doc.rust-lang.org/std/env/consts/constant.OS.html>
     /// can be empty (e.g., for WASM)
     #[prost(string, tag = "11")]
@@ -64,6 +66,21 @@ pub struct RunlogFinished {
     #[prost(int32, tag = "3")]
     pub exit_code: i32,
 }
+/// Why not separate messages like "CpuMetric", "DiskMetric" etc.?
+/// The intention is keep the schema as flat as possible to keep it simple (from communication to storage to querying).
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MetricEvent {
+    #[prost(enumeration = "MetricType", tag = "1")]
+    pub metric_type: i32,
+    #[prost(uint64, tag = "2")]
+    pub metric_at_ts: u64,
+    /// for CPUs, label can be "CPU 0", "CPU 1" etc.
+    /// for disks, label can be disk mount point etc.
+    #[prost(string, tag = "3")]
+    pub label: ::prost::alloc::string::String,
+    #[prost(double, tag = "4")]
+    pub value: f64,
+}
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RunlogOutputFragment {
     #[prost(uint64, tag = "1")]
@@ -77,17 +94,23 @@ pub struct RunlogOutputFragment {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct A2oMessage {
-    #[prost(oneof = "a2o_message::A2oPayload", tags = "100, 101, 201, 202, 203, 204")]
+    #[prost(
+        oneof = "a2o_message::A2oPayload",
+        tags = "101, 200, 201, 202, 203, 204, 401"
+    )]
     pub a2o_payload: ::core::option::Option<a2o_message::A2oPayload>,
 }
 /// Nested message and enum types in `A2oMessage`.
 pub mod a2o_message {
     #[derive(Clone, PartialEq, ::prost::Oneof)]
     pub enum A2oPayload {
-        #[prost(message, tag = "100")]
-        Error(super::Error),
+        /// Unauthenticated messages (range from 101 - 199)
         #[prost(message, tag = "101")]
         AuthRequestToken(super::AuthRequestToken),
+        /// Authenticated messages (range from 200 onwards)
+        #[prost(message, tag = "200")]
+        Error(super::Error),
+        /// Runlog messages
         #[prost(message, tag = "201")]
         RunlogStarted(super::RunlogStarted),
         #[prost(message, tag = "202")]
@@ -96,16 +119,17 @@ pub mod a2o_message {
         RunlogFailed(super::RunlogFailed),
         #[prost(message, tag = "204")]
         RunlogFinished(super::RunlogFinished),
+        /// Metrics
+        #[prost(message, tag = "401")]
+        MetricEvent(super::MetricEvent),
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct A2oRoot {
     #[prost(string, tag = "1")]
     pub agent_token: ::prost::alloc::string::String,
-    #[prost(message, optional, tag = "2")]
-    pub agent_version: ::core::option::Option<Version>,
     #[prost(message, repeated, tag = "11")]
-    pub a2o_messages: ::prost::alloc::vec::Vec<A2oMessage>,
+    pub messages: ::prost::alloc::vec::Vec<A2oMessage>,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
@@ -152,6 +176,38 @@ impl RunlogFailReason {
         match value {
             "RFR_UNKNOWN" => Some(Self::RfrUnknown),
             "RFR_TIMEOUT" => Some(Self::RfrTimeout),
+            _ => None,
+        }
+    }
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum MetricType {
+    MetricUnknown = 0,
+    MetricCpuGlobalPercent = 11,
+    MetricMemoryTotalBytes = 21,
+    MetricMemoryUsedBytes = 22,
+}
+impl MetricType {
+    /// String value of the enum field names used in the ProtoBuf definition.
+    ///
+    /// The values are not transformed in any way and thus are considered stable
+    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    pub fn as_str_name(&self) -> &'static str {
+        match self {
+            Self::MetricUnknown => "METRIC_UNKNOWN",
+            Self::MetricCpuGlobalPercent => "METRIC_CPU_GLOBAL_PERCENT",
+            Self::MetricMemoryTotalBytes => "METRIC_MEMORY_TOTAL_BYTES",
+            Self::MetricMemoryUsedBytes => "METRIC_MEMORY_USED_BYTES",
+        }
+    }
+    /// Creates an enum from field names used in the ProtoBuf definition.
+    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+        match value {
+            "METRIC_UNKNOWN" => Some(Self::MetricUnknown),
+            "METRIC_CPU_GLOBAL_PERCENT" => Some(Self::MetricCpuGlobalPercent),
+            "METRIC_MEMORY_TOTAL_BYTES" => Some(Self::MetricMemoryTotalBytes),
+            "METRIC_MEMORY_USED_BYTES" => Some(Self::MetricMemoryUsedBytes),
             _ => None,
         }
     }

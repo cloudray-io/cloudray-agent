@@ -3,7 +3,6 @@ mod cable;
 mod config;
 mod daemonise;
 mod device_uid;
-mod experiment_talk_api;
 mod experiment_ws;
 mod generated;
 mod machine_name;
@@ -11,13 +10,15 @@ mod message_queue;
 mod net;
 mod o2a_messages;
 mod panic_error;
+mod tasks;
 mod types;
 mod utils;
 mod version;
 
 use crate::config::CONFIG;
 use crate::daemonise::daemonise;
-use crate::experiment_talk_api::start;
+use crate::tasks::metrics::run_metrics_task;
+use crate::tasks::report::run_report_task;
 use anyhow::anyhow;
 use tracing::info;
 use tracing_subscriber::{fmt, EnvFilter};
@@ -41,6 +42,10 @@ fn main() -> anyhow::Result<()> {
 #[tokio::main]
 async fn tokio_main() -> anyhow::Result<()> {
     info!("Starting cloudray-agent…");
-    start().await?;
+    let report_task = run_report_task().await;
+    run_metrics_task().await;
+
+    let _ = report_task.await?;
+
     Ok(())
 }

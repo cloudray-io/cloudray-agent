@@ -8,10 +8,10 @@ pub struct Error {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AuthResult {
-    #[prost(bool, tag = "1")]
-    pub auth_success: bool,
-    #[prost(string, tag = "2")]
+    #[prost(string, tag = "1")]
     pub agent_token: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub machine_url: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RunRunlog {
@@ -22,11 +22,15 @@ pub struct RunRunlog {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct O2aMessage {
+    /// why not just "payload"? Since generated code creates an enum with this name, "O2aPayload" is more readable than
+    /// "Payload" to easily understand the context of code.
     #[prost(oneof = "o2a_message::O2aPayload", tags = "100, 101, 201")]
     pub o2a_payload: ::core::option::Option<o2a_message::O2aPayload>,
 }
 /// Nested message and enum types in `O2aMessage`.
 pub mod o2a_message {
+    /// why not just "payload"? Since generated code creates an enum with this name, "O2aPayload" is more readable than
+    /// "Payload" to easily understand the context of code.
     #[derive(Clone, PartialEq, ::prost::Oneof)]
     pub enum O2aPayload {
         #[prost(message, tag = "100")]
@@ -40,7 +44,7 @@ pub mod o2a_message {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct O2aRoot {
     #[prost(message, repeated, tag = "11")]
-    pub o2a_messages: ::prost::alloc::vec::Vec<O2aMessage>,
+    pub messages: ::prost::alloc::vec::Vec<O2aMessage>,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
@@ -48,9 +52,10 @@ pub enum ErrorType {
     ErrorUnknown = 0,
     ErrorInternalServer = 1,
     ErrorProtobufParse = 2,
-    ErrorMessageNotAllowedInHandshake = 4,
+    ErrorMessageRequiresAuthentication = 4,
     ErrorAgentTokenInvalid = 11,
     ErrorAgentTokenExpired = 12,
+    ErrorRegCodeInvalid = 21,
 }
 impl ErrorType {
     /// String value of the enum field names used in the ProtoBuf definition.
@@ -62,11 +67,12 @@ impl ErrorType {
             Self::ErrorUnknown => "ERROR_UNKNOWN",
             Self::ErrorInternalServer => "ERROR_INTERNAL_SERVER",
             Self::ErrorProtobufParse => "ERROR_PROTOBUF_PARSE",
-            Self::ErrorMessageNotAllowedInHandshake => {
-                "ERROR_MESSAGE_NOT_ALLOWED_IN_HANDSHAKE"
+            Self::ErrorMessageRequiresAuthentication => {
+                "ERROR_MESSAGE_REQUIRES_AUTHENTICATION"
             }
             Self::ErrorAgentTokenInvalid => "ERROR_AGENT_TOKEN_INVALID",
             Self::ErrorAgentTokenExpired => "ERROR_AGENT_TOKEN_EXPIRED",
+            Self::ErrorRegCodeInvalid => "ERROR_REG_CODE_INVALID",
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
@@ -75,11 +81,12 @@ impl ErrorType {
             "ERROR_UNKNOWN" => Some(Self::ErrorUnknown),
             "ERROR_INTERNAL_SERVER" => Some(Self::ErrorInternalServer),
             "ERROR_PROTOBUF_PARSE" => Some(Self::ErrorProtobufParse),
-            "ERROR_MESSAGE_NOT_ALLOWED_IN_HANDSHAKE" => {
-                Some(Self::ErrorMessageNotAllowedInHandshake)
+            "ERROR_MESSAGE_REQUIRES_AUTHENTICATION" => {
+                Some(Self::ErrorMessageRequiresAuthentication)
             }
             "ERROR_AGENT_TOKEN_INVALID" => Some(Self::ErrorAgentTokenInvalid),
             "ERROR_AGENT_TOKEN_EXPIRED" => Some(Self::ErrorAgentTokenExpired),
+            "ERROR_REG_CODE_INVALID" => Some(Self::ErrorRegCodeInvalid),
             _ => None,
         }
     }
