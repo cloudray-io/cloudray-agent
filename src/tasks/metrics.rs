@@ -1,9 +1,9 @@
+use crate::config::{COLLECT_METRICS_EVERY, CPU_MAX_SAMPLES, CPU_SAMPLE_INTERVAL};
 use crate::generated::pb::a2o::a2o_message::A2oPayload;
 use crate::generated::pb::a2o::{MetricEvent, MetricType};
 use crate::message_queue::MessageQueue;
 use crate::utils::current_timestamp_secs;
 use std::sync::Arc;
-use std::time::Duration;
 use sysinfo::{CpuRefreshKind, MemoryRefreshKind, RefreshKind, System};
 use tokio::sync::Mutex;
 use tokio::task::JoinHandle;
@@ -11,9 +11,6 @@ use tokio::time::sleep;
 use tracing::debug;
 
 type CpuSamples = Arc<Mutex<Vec<f32>>>;
-
-const CPU_SAMPLE_INTERVAL: Duration = Duration::from_secs(5);
-const CPU_MAX_SAMPLES: usize = 12;
 
 pub async fn run_metrics_task() -> JoinHandle<anyhow::Result<()>> {
     let samples: CpuSamples = Arc::new(Mutex::new(Vec::new()));
@@ -27,7 +24,7 @@ async fn metrics_task(samples: CpuSamples) -> anyhow::Result<()> {
 
     loop {
         sys = collect_metrics(sys, samples.clone()).await?;
-        sleep(Duration::from_secs(60)).await;
+        sleep(COLLECT_METRICS_EVERY).await;
     }
 }
 

@@ -43,7 +43,7 @@ fn main() -> anyhow::Result<()> {
 async fn tokio_main() -> anyhow::Result<()> {
     info!("Starting cloudray-agent…");
     let report_task = run_report_task().await;
-    let _ = run_metrics_task().await;
+    run_metrics_task().await;
 
     let _ = report_task.await?;
 

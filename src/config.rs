@@ -8,6 +8,11 @@ use tracing::error;
 
 const ORIGIN_HOST: &str = "api.cloudray.io";
 
+pub const CPU_SAMPLE_INTERVAL: Duration = Duration::from_secs(5);
+pub const CPU_MAX_SAMPLES: usize = 12;
+pub const COLLECT_METRICS_EVERY: Duration = Duration::from_secs(60);
+pub const REPORT_EVERY: Duration = Duration::from_secs(30);
+
 pub static AGENT_TOKEN: LazyLock<RwLock<Option<AgentToken>>> = LazyLock::new(|| RwLock::new(None));
 
 pub static CONFIG: LazyLock<Config> = LazyLock::new(|| {

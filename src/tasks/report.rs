@@ -1,12 +1,11 @@
-use crate::config::AGENT_TOKEN;
+use crate::config::{AGENT_TOKEN, REPORT_EVERY};
 use crate::generated::pb::o2a::o2a_message::O2aPayload;
 use crate::net::handshake::handshake;
 use crate::net::talk::talk;
 use crate::o2a_messages::process_auth_result::process_auth_result;
 use crate::o2a_messages::run_runlog::process_run_runlog;
-use std::time::Duration;
 use tokio::task::JoinHandle;
-use tracing::{error, info};
+use tracing::{debug, error, info};
 
 pub async fn run_report_task() -> JoinHandle<anyhow::Result<()>> {
     tokio::spawn(report())
@@ -41,7 +40,7 @@ async fn report() -> anyhow::Result<()> {
             }
         }
 
-        println!("Sleeping for 5 seconds");
-        tokio::time::sleep(Duration::from_secs(5)).await
+        debug!("Sleeping for 5 seconds");
+        tokio::time::sleep(REPORT_EVERY).await
     }
 }
