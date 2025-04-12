@@ -5,16 +5,18 @@ use crate::generated::pb::a2o::AuthRequestToken;
 use crate::generated::pb::o2a::O2aRoot;
 use crate::machine_name::machine_name;
 use crate::net::receive::receive_messages;
+use crate::version::agent_version_as_pb;
 use sysinfo::System;
 
 pub async fn handshake() -> anyhow::Result<O2aRoot> {
-    let url = CONFIG.agent_v1_handshake_endpoint();
+    let url = CONFIG.agent_v1_endpoint();
     let mut payloads = Vec::new();
 
     let payload = AuthRequestToken {
         reg_code: CONFIG.reg_code().clone(),
         machine_uid: device_uid_as_string().unwrap_or_default(),
         machine_name: machine_name(),
+        agent_version: Some(agent_version_as_pb()),
         os_family: std::env::consts::FAMILY.to_string(),
         os_name: std::env::consts::OS.to_string(),
         os_distro: System::distribution_id(),

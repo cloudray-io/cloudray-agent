@@ -21,6 +21,7 @@ message AuthRequestToken {
   string reg_code = 1;
   string machine_uid = 2;
   string machine_name = 3;
+  Version agent_version = 4;
 
   // full list: https://doc.rust-lang.org/std/env/consts/constant.OS.html
   // can be empty (e.g., for WASM)
@@ -57,6 +58,26 @@ message RunlogFinished {
   int32 exit_code = 3;
 }
 
+enum MetricType {
+  METRIC_UNKNOWN = 0;
+
+  METRIC_CPU_GLOBAL_PERCENT = 11;
+
+  METRIC_MEMORY_TOTAL_BYTES = 21;
+  METRIC_MEMORY_USED_BYTES = 22;
+}
+
+// Why not separate messages like "CpuMetric", "DiskMetric" etc.?
+// The intention is keep the schema as flat as possible to keep it simple (from communication to storage to querying).
+message MetricEvent {
+  MetricType metric_type = 1;
+  uint64 metric_at_ts = 2;
+  // for CPUs, label can be "CPU 0", "CPU 1" etc.
+  // for disks, label can be disk mount point etc.
+  string label = 3;
+  double value = 4;
+}
+
 enum OutputStreamType {
   OST_STDOUT = 0;
   OST_STDERR = 1;
@@ -71,20 +92,25 @@ message RunlogOutputFragment {
 
 message A2oMessage {
   oneof a2o_payload {
-    Error error = 100;
-
+    // Unauthenticated messages (range from 101 - 199)
     AuthRequestToken auth_request_token = 101;
 
+    // Authenticated messages (range from 200 onwards)
+    Error error = 200;
+
+    // Runlog messages
     RunlogStarted runlog_started = 201;
     RunlogOutputFragment runlog_output_fragment = 202;
     RunlogFailed runlog_failed = 203;
     RunlogFinished runlog_finished = 204;
+
+    // Metrics
+    MetricEvent metric_event = 401;
   }
 }
 
 message A2oRoot {
   string agent_token = 1;
-  Version agent_version = 2;
 
-  repeated A2oMessage a2o_messages = 11;
+  repeated A2oMessage messages = 11;
 }

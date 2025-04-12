@@ -5,7 +5,7 @@ use crate::net::receive::receive_messages;
 use crate::types::AgentToken;
 
 pub async fn talk(agent_token: &AgentToken) -> anyhow::Result<O2aRoot> {
-    let url = CONFIG.agent_v1_talk_endpoint();
+    let url = CONFIG.agent_v1_endpoint();
 
     let mut payloads = Vec::new();
 

@@ -1,9 +1,11 @@
+use crate::config::CONFIG;
 use crate::generated::pb::a2o::a2o_message::A2oPayload;
 use crate::generated::pb::a2o::{A2oMessage, A2oRoot};
 use crate::generated::pb::o2a::O2aRoot;
 use crate::types::AgentToken;
-use crate::version::agent_version_as_pb;
 use prost::Message;
+use std::time::Duration;
+use tokio_tungstenite::tungstenite::client;
 use tracing::debug;
 
 pub async fn receive_messages(
@@ -15,7 +17,6 @@ pub async fn receive_messages(
     if let Some(agent_token) = agent_token {
         payload.agent_token = agent_token.0.to_string();
     }
-    payload.agent_version = Some(agent_version_as_pb());
     let messages = payloads
         .into_iter()
         .map(|payload| A2oMessage {
@@ -23,15 +24,14 @@ pub async fn receive_messages(
         })
         .collect();
 
-    payload.a2o_messages = messages;
+    payload.messages = messages;
 
     debug!("Sending PB: {:?}", payload);
 
     let body = payload.encode_to_vec();
 
-    let client = reqwest::Client::new();
-
-    let res = client
+    let res = CONFIG
+        .origin_client()
         .post(url)
         .header("Content-Type", "application/x-protobuf")
         .body(body)

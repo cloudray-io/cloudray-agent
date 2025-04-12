@@ -7,10 +7,12 @@ enum ErrorType {
 
   ERROR_INTERNAL_SERVER = 1;
   ERROR_PROTOBUF_PARSE = 2;
-  ERROR_MESSAGE_NOT_ALLOWED_IN_HANDSHAKE = 4;
+  ERROR_MESSAGE_REQUIRES_AUTHENTICATION = 4;
 
   ERROR_AGENT_TOKEN_INVALID = 11;
   ERROR_AGENT_TOKEN_EXPIRED = 12;
+
+  ERROR_REG_CODE_INVALID = 21;
 }
 
 message Error {
@@ -19,8 +21,8 @@ message Error {
 }
 
 message AuthResult {
-  bool auth_success = 1;
-  string agent_token = 2;
+  string agent_token = 1;
+  string machine_url = 2;
 }
 
 message RunRunlog {
@@ -29,6 +31,8 @@ message RunRunlog {
 }
 
 message O2aMessage {
+  // why not just "payload"? Since generated code creates an enum with this name, "O2aPayload" is more readable than
+  // "Payload" to easily understand the context of code.
   oneof o2a_payload {
     Error error = 100;
 
@@ -39,5 +43,5 @@ message O2aMessage {
 }
 
 message O2aRoot {
-  repeated O2aMessage o2a_messages = 11;
+  repeated O2aMessage messages = 11;
 }

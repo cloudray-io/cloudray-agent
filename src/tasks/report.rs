@@ -5,19 +5,24 @@ use crate::net::talk::talk;
 use crate::o2a_messages::process_auth_result::process_auth_result;
 use crate::o2a_messages::run_runlog::process_run_runlog;
 use std::time::Duration;
+use tokio::task::JoinHandle;
 use tracing::{error, info};
 
-pub async fn start() -> anyhow::Result<()> {
-    loop {
-        let agent_token = AGENT_TOKEN.read().await;
+pub async fn run_report_task() -> JoinHandle<anyhow::Result<()>> {
+    tokio::spawn(report())
+}
 
-        let o2a_root = if let Some(agent_token) = agent_token.as_ref() {
-            talk(agent_token).await?
+async fn report() -> anyhow::Result<()> {
+    loop {
+        let agent_token = AGENT_TOKEN.read().await.clone().to_owned();
+
+        let o2a_root = if let Some(agent_token) = agent_token {
+            talk(&agent_token).await?
         } else {
             handshake().await?
         };
 
-        for message in o2a_root.o2a_messages {
+        for message in o2a_root.messages {
             if let Some(payload) = message.o2a_payload {
                 match payload {
                     O2aPayload::AuthResult(payload) => {
