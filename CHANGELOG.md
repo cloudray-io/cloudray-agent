@@ -15,10 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Other
 
-- Ignore patch versions in dependabot. ([#14](https://github.com/cloudray-io/cloudray-agent/pull/14))
-- Bump tokio from 1.43.0 to 1.44.2 ([#10](https://github.com/cloudray-io/cloudray-agent/pull/10))
-- Bump clap from 4.5.28 to 4.5.35 ([#8](https://github.com/cloudray-io/cloudray-agent/pull/8))
-- Create an example of running scripts using Protocol Buffers. ([#6](https://github.com/cloudray-io/cloudray-agent/pull/6))
+- Releasing this version to test GitHub Actions workflows for releases.
 
 ## [0.0.1](https://github.com/cloudray-io/cloudray-agent/releases/tag/v0.0.1) - 2025-04-06
 
