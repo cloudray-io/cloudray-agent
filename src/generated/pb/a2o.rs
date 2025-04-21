@@ -25,21 +25,28 @@ pub struct AuthRequestToken {
     pub machine_name: ::prost::alloc::string::String,
     #[prost(message, optional, tag = "4")]
     pub agent_version: ::core::option::Option<Version>,
-    /// full list: <https://doc.rust-lang.org/std/env/consts/constant.OS.html>
-    /// can be empty (e.g., for WASM)
+    /// full list: <https://doc.rust-lang.org/std/env/consts/constant.ARCH.html>
     #[prost(string, tag = "11")]
+    pub os_arch: ::prost::alloc::string::String,
+    /// full list: <https://doc.rust-lang.org/std/env/consts/constant.FAMILY.html>
+    /// can be empty (e.g., for WASM)
+    #[prost(string, tag = "12")]
     pub os_family: ::prost::alloc::string::String,
     /// full list: <https://doc.rust-lang.org/std/env/consts/constant.OS.html>
     /// can be empty (e.g., for WASM)
-    #[prost(string, tag = "12")]
-    pub os_name: ::prost::alloc::string::String,
     #[prost(string, tag = "13")]
-    pub os_distro: ::prost::alloc::string::String,
+    pub os_name: ::prost::alloc::string::String,
+    /// In Linux, value of "ID" from /etc/os-release
+    /// see <https://docs.rs/sysinfo/latest/sysinfo/struct.System.html#method.distribution_id>
     #[prost(string, tag = "14")]
-    pub os_version: ::prost::alloc::string::String,
-    /// full list: <https://doc.rust-lang.org/std/env/consts/constant.ARCH.html>
+    pub os_distro: ::prost::alloc::string::String,
+    /// In Linux, value of "VERSION_ID" from /etc/os-release
+    /// see <https://docs.rs/sysinfo/latest/sysinfo/struct.System.html#method.os_version>
     #[prost(string, tag = "15")]
-    pub os_arch: ::prost::alloc::string::String,
+    pub os_version: ::prost::alloc::string::String,
+    /// <https://docs.rs/sysinfo/latest/sysinfo/struct.System.html#method.long_os_version>
+    #[prost(string, tag = "16")]
+    pub os_version_long: ::prost::alloc::string::String,
 }
 /// Why not separate messages like "CpuMetric", "DiskMetric" etc.?
 /// The intention is keep the schema as flat as possible to keep it simple (from communication to storage to querying).

@@ -17,11 +17,13 @@ pub async fn handshake() -> anyhow::Result<O2aRoot> {
         machine_uid: device_uid_as_string().unwrap_or_default(),
         machine_name: machine_name(),
         agent_version: Some(agent_version_as_pb()),
+
+        os_arch: std::env::consts::ARCH.to_string(),
         os_family: std::env::consts::FAMILY.to_string(),
         os_name: std::env::consts::OS.to_string(),
         os_distro: System::distribution_id(),
         os_version: System::os_version().unwrap_or_default(),
-        os_arch: std::env::consts::ARCH.to_string(),
+        os_version_long: System::long_os_version().unwrap_or_default(),
     };
 
     payloads.push(A2oPayload::AuthRequestToken(payload));

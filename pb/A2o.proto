@@ -23,16 +23,22 @@ message AuthRequestToken {
   string machine_name = 3;
   Version agent_version = 4;
 
-  // full list: https://doc.rust-lang.org/std/env/consts/constant.OS.html
-  // can be empty (e.g., for WASM)
-  string os_family = 11;
-  // full list: https://doc.rust-lang.org/std/env/consts/constant.OS.html
-  // can be empty (e.g., for WASM)
-  string os_name = 12;
-  string os_distro = 13;
-  string os_version = 14;
   // full list: https://doc.rust-lang.org/std/env/consts/constant.ARCH.html
-  string os_arch = 15;
+  string os_arch = 11;
+  // full list: https://doc.rust-lang.org/std/env/consts/constant.FAMILY.html
+  // can be empty (e.g., for WASM)
+  string os_family = 12;
+  // full list: https://doc.rust-lang.org/std/env/consts/constant.OS.html
+  // can be empty (e.g., for WASM)
+  string os_name = 13;
+  // In Linux, value of "ID" from /etc/os-release
+  // see https://docs.rs/sysinfo/latest/sysinfo/struct.System.html#method.distribution_id
+  string os_distro = 14;
+  // In Linux, value of "VERSION_ID" from /etc/os-release
+  // see https://docs.rs/sysinfo/latest/sysinfo/struct.System.html#method.os_version
+  string os_version = 15;
+  // https://docs.rs/sysinfo/latest/sysinfo/struct.System.html#method.long_os_version
+  string os_version_long = 16;
 }
 
 enum MetricType {
