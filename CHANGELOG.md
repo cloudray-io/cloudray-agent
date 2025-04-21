@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.2](https://github.com/cloudray-io/cloudray-agent/compare/v0.0.1...v0.0.2) - 2025-04-12
+
+### Added
+
+- Collect CPU and memory metrics. ([#16](https://github.com/cloudray-io/cloudray-agent/pull/16))
+
+### Other
+
+- Releasing this version to test GitHub Actions workflows for releases.
+
 ## [0.0.1](https://github.com/cloudray-io/cloudray-agent/releases/tag/v0.0.1) - 2025-04-06
 
 ### Other
