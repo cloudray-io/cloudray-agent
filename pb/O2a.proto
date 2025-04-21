@@ -25,7 +25,7 @@ message AuthResult {
   string machine_url = 2;
 }
 
-message RunRunlog {
+message RunlogRun {
   uint64 runlog_id = 1;
   string parsed_script = 2;
 }
@@ -38,7 +38,7 @@ message O2aMessage {
 
     AuthResult auth_result = 101;
 
-    RunRunlog run_runlog = 201;
+    RunlogRun runlog_run = 201;
   }
 }
 

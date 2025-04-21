@@ -14,7 +14,7 @@ pub struct AuthResult {
     pub machine_url: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct RunRunlog {
+pub struct RunlogRun {
     #[prost(uint64, tag = "1")]
     pub runlog_id: u64,
     #[prost(string, tag = "2")]
@@ -38,7 +38,7 @@ pub mod o2a_message {
         #[prost(message, tag = "101")]
         AuthResult(super::AuthResult),
         #[prost(message, tag = "201")]
-        RunRunlog(super::RunRunlog),
+        RunlogRun(super::RunlogRun),
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]

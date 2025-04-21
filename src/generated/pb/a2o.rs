@@ -41,6 +41,21 @@ pub struct AuthRequestToken {
     #[prost(string, tag = "15")]
     pub os_arch: ::prost::alloc::string::String,
 }
+/// Why not separate messages like "CpuMetric", "DiskMetric" etc.?
+/// The intention is keep the schema as flat as possible to keep it simple (from communication to storage to querying).
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct MetricEvent {
+    #[prost(enumeration = "MetricType", tag = "1")]
+    pub metric_type: i32,
+    #[prost(uint64, tag = "2")]
+    pub metric_at_ts: u64,
+    /// for CPUs, label can be "CPU 0", "CPU 1" etc.
+    /// for disks, label can be disk mount point etc.
+    #[prost(string, tag = "3")]
+    pub label: ::prost::alloc::string::String,
+    #[prost(double, tag = "4")]
+    pub value: f64,
+}
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
 pub struct RunlogStarted {
     #[prost(uint64, tag = "1")]
@@ -65,21 +80,6 @@ pub struct RunlogFinished {
     pub finished_at_ts: u64,
     #[prost(int32, tag = "3")]
     pub exit_code: i32,
-}
-/// Why not separate messages like "CpuMetric", "DiskMetric" etc.?
-/// The intention is keep the schema as flat as possible to keep it simple (from communication to storage to querying).
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct MetricEvent {
-    #[prost(enumeration = "MetricType", tag = "1")]
-    pub metric_type: i32,
-    #[prost(uint64, tag = "2")]
-    pub metric_at_ts: u64,
-    /// for CPUs, label can be "CPU 0", "CPU 1" etc.
-    /// for disks, label can be disk mount point etc.
-    #[prost(string, tag = "3")]
-    pub label: ::prost::alloc::string::String,
-    #[prost(double, tag = "4")]
-    pub value: f64,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RunlogOutputFragment {
@@ -156,32 +156,6 @@ impl ErrorType {
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
-pub enum RunlogFailReason {
-    RfrUnknown = 0,
-    RfrTimeout = 1,
-}
-impl RunlogFailReason {
-    /// String value of the enum field names used in the ProtoBuf definition.
-    ///
-    /// The values are not transformed in any way and thus are considered stable
-    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
-    pub fn as_str_name(&self) -> &'static str {
-        match self {
-            Self::RfrUnknown => "RFR_UNKNOWN",
-            Self::RfrTimeout => "RFR_TIMEOUT",
-        }
-    }
-    /// Creates an enum from field names used in the ProtoBuf definition.
-    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
-        match value {
-            "RFR_UNKNOWN" => Some(Self::RfrUnknown),
-            "RFR_TIMEOUT" => Some(Self::RfrTimeout),
-            _ => None,
-        }
-    }
-}
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
-#[repr(i32)]
 pub enum MetricType {
     MetricUnknown = 0,
     MetricCpuGlobalPercent = 11,
@@ -208,6 +182,32 @@ impl MetricType {
             "METRIC_CPU_GLOBAL_PERCENT" => Some(Self::MetricCpuGlobalPercent),
             "METRIC_MEMORY_TOTAL_BYTES" => Some(Self::MetricMemoryTotalBytes),
             "METRIC_MEMORY_USED_BYTES" => Some(Self::MetricMemoryUsedBytes),
+            _ => None,
+        }
+    }
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum RunlogFailReason {
+    RfrUnknown = 0,
+    RfrTimeout = 1,
+}
+impl RunlogFailReason {
+    /// String value of the enum field names used in the ProtoBuf definition.
+    ///
+    /// The values are not transformed in any way and thus are considered stable
+    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    pub fn as_str_name(&self) -> &'static str {
+        match self {
+            Self::RfrUnknown => "RFR_UNKNOWN",
+            Self::RfrTimeout => "RFR_TIMEOUT",
+        }
+    }
+    /// Creates an enum from field names used in the ProtoBuf definition.
+    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+        match value {
+            "RFR_UNKNOWN" => Some(Self::RfrUnknown),
+            "RFR_TIMEOUT" => Some(Self::RfrTimeout),
             _ => None,
         }
     }

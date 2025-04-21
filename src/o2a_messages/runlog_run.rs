@@ -1,22 +1,28 @@
+use crate::config::{set_send_report_at_now, RUNLOG_RUN_TIMEOUT};
 use crate::generated::pb::a2o::a2o_message::A2oPayload;
 use crate::generated::pb::a2o::{
     OutputStreamType, RunlogFailReason, RunlogFailed, RunlogFinished, RunlogOutputFragment,
     RunlogStarted,
 };
-use crate::generated::pb::o2a::RunRunlog;
+use crate::generated::pb::o2a::RunlogRun;
 use crate::message_queue::MessageQueue;
 use crate::utils::current_timestamp_secs;
 use std::fs;
 use std::path::PathBuf;
 use std::process::Stdio;
-use std::time::Duration;
 use tokio::io::BufReader;
 use tokio::io::{AsyncRead, AsyncReadExt};
 use tokio::process::Command;
+use tokio::task::JoinHandle;
 use tokio::time::timeout;
+use tracing::{debug, error};
 use webterm_core::random::random_alphanumeric;
 
-pub async fn process_run_runlog(message: RunRunlog) -> anyhow::Result<()> {
+pub async fn process_run_runlog(message: RunlogRun) -> JoinHandle<anyhow::Result<()>> {
+    tokio::spawn(run_task(message))
+}
+
+async fn run_task(message: RunlogRun) -> anyhow::Result<()> {
     let parsed_script = message.parsed_script;
     let runlog_id = message.runlog_id;
 
@@ -25,6 +31,8 @@ pub async fn process_run_runlog(message: RunRunlog) -> anyhow::Result<()> {
         runlog_id,
         random_alphanumeric(10)
     ));
+
+    let _script_guard = ScriptGuard::new(script_path.clone());
 
     fs::write(&script_path, &parsed_script)?;
 
@@ -40,6 +48,8 @@ pub async fn process_run_runlog(message: RunRunlog) -> anyhow::Result<()> {
     }))
     .await;
 
+    set_send_report_at_now().await;
+
     let stdout = child.stdout.take().unwrap();
     let stderr = child.stderr.take().unwrap();
 
@@ -54,7 +64,7 @@ pub async fn process_run_runlog(message: RunRunlog) -> anyhow::Result<()> {
         OutputStreamType::OstStderr,
     ));
 
-    match timeout(Duration::from_secs(60 * 60), async {
+    match timeout(RUNLOG_RUN_TIMEOUT, async {
         let status = child.wait().await?;
         let _ = tokio::join!(stdout_handle, stderr_handle);
         Ok::<_, anyhow::Error>(status)
@@ -63,7 +73,6 @@ pub async fn process_run_runlog(message: RunRunlog) -> anyhow::Result<()> {
     {
         Ok(result) => {
             let status = result?;
-            let _ = fs::remove_file(script_path);
 
             MessageQueue::push(A2oPayload::RunlogFinished(RunlogFinished {
                 runlog_id,
@@ -74,7 +83,6 @@ pub async fn process_run_runlog(message: RunRunlog) -> anyhow::Result<()> {
         }
         Err(_) => {
             child.kill().await?;
-            let _ = fs::remove_file(script_path);
 
             MessageQueue::push(A2oPayload::RunlogFailed(RunlogFailed {
                 runlog_id,
@@ -85,6 +93,8 @@ pub async fn process_run_runlog(message: RunRunlog) -> anyhow::Result<()> {
         }
     }
 
+    let _ = fs::remove_file(script_path);
+    set_send_report_at_now().await;
     Ok(())
 }
 
@@ -109,7 +119,34 @@ where
             output_fragment: buffer[..n].to_vec(),
         }))
         .await;
+        set_send_report_at_now().await;
     }
 
     Ok(())
+}
+
+// RAII Guard for script file cleanup
+struct ScriptGuard {
+    path: PathBuf,
+}
+
+impl ScriptGuard {
+    fn new(path: PathBuf) -> Self {
+        ScriptGuard { path }
+    }
+}
+
+impl Drop for ScriptGuard {
+    fn drop(&mut self) {
+        match fs::remove_file(&self.path) {
+            Ok(_) => {
+                debug!(path = %self.path.display(), "Removed temporary script file");
+            }
+            Err(e) => {
+                if self.path.exists() {
+                    error!(path = %self.path.display(), "Failed to remove script file: {}", e);
+                }
+            }
+        }
+    }
 }

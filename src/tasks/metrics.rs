@@ -1,4 +1,4 @@
-use crate::config::{COLLECT_METRICS_EVERY, CPU_MAX_SAMPLES, CPU_SAMPLE_INTERVAL};
+use crate::config::{METRICS_COLLECT_EVERY, METRICS_CPU_MAX_SAMPLES, METRICS_CPU_SAMPLE_EVERY};
 use crate::generated::pb::a2o::a2o_message::A2oPayload;
 use crate::generated::pb::a2o::{MetricEvent, MetricType};
 use crate::message_queue::MessageQueue;
@@ -24,7 +24,7 @@ async fn metrics_task(samples: CpuSamples) -> anyhow::Result<()> {
 
     loop {
         sys = collect_metrics(sys, samples.clone()).await?;
-        sleep(COLLECT_METRICS_EVERY).await;
+        sleep(METRICS_COLLECT_EVERY).await;
     }
 }
 
@@ -38,11 +38,11 @@ async fn sample_cpu_task(samples: CpuSamples) {
         {
             let mut sample_lock = samples.lock().await;
             sample_lock.push(usage);
-            if sample_lock.len() > CPU_MAX_SAMPLES {
+            if sample_lock.len() > METRICS_CPU_MAX_SAMPLES {
                 sample_lock.remove(0);
             }
         }
-        sleep(CPU_SAMPLE_INTERVAL).await;
+        sleep(METRICS_CPU_SAMPLE_EVERY).await;
     }
 }
 

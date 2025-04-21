@@ -35,6 +35,26 @@ message AuthRequestToken {
   string os_arch = 15;
 }
 
+enum MetricType {
+  METRIC_UNKNOWN = 0;
+
+  METRIC_CPU_GLOBAL_PERCENT = 11;
+
+  METRIC_MEMORY_TOTAL_BYTES = 21;
+  METRIC_MEMORY_USED_BYTES = 22;
+}
+
+// Why not separate messages like "CpuMetric", "DiskMetric" etc.?
+// The intention is keep the schema as flat as possible to keep it simple (from communication to storage to querying).
+message MetricEvent {
+  MetricType metric_type = 1;
+  uint64 metric_at_ts = 2;
+  // for CPUs, label can be "CPU 0", "CPU 1" etc.
+  // for disks, label can be disk mount point etc.
+  string label = 3;
+  double value = 4;
+}
+
 message RunlogStarted {
   uint64 runlog_id = 1;
   uint64 started_at_ts = 2;
@@ -56,26 +76,6 @@ message RunlogFinished {
   uint64 runlog_id = 1;
   uint64 finished_at_ts = 2;
   int32 exit_code = 3;
-}
-
-enum MetricType {
-  METRIC_UNKNOWN = 0;
-
-  METRIC_CPU_GLOBAL_PERCENT = 11;
-
-  METRIC_MEMORY_TOTAL_BYTES = 21;
-  METRIC_MEMORY_USED_BYTES = 22;
-}
-
-// Why not separate messages like "CpuMetric", "DiskMetric" etc.?
-// The intention is keep the schema as flat as possible to keep it simple (from communication to storage to querying).
-message MetricEvent {
-  MetricType metric_type = 1;
-  uint64 metric_at_ts = 2;
-  // for CPUs, label can be "CPU 0", "CPU 1" etc.
-  // for disks, label can be disk mount point etc.
-  string label = 3;
-  double value = 4;
 }
 
 enum OutputStreamType {
