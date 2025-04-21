@@ -52,6 +52,8 @@ jobs:
             os: macos-15
           - name: x86_64-pc-windows-msvc
             os: windows-2025
+          - name: aarch64-pc-windows-msvc
+            os: windows-latest
 
     runs-on: ${{ matrix.target.os }}
 
