@@ -38,6 +38,7 @@ jobs:
   upload-binaries:
     needs: release-plz-release
     if: needs.release-plz-release.outputs.releases != '[]'
+    name: ${{ matrix.target.name }} / ${{ matrix.release.tag }} / ${{ matrix.release.package_name }}
     strategy:
       matrix:
         release: ${{ fromJSON(needs.release-plz-release.outputs.releases) }}
