@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.5](https://github.com/cloudray-io/cloudray-agent/compare/v0.0.4...v0.0.5) - 2025-04-23
+
+### Added
+
+- Improve the build name. ([#22](https://github.com/cloudray-io/cloudray-agent/pull/22))
+
 ## [0.0.4](https://github.com/cloudray-io/cloudray-agent/compare/v0.0.3...v0.0.4) - 2025-04-21
 
 ### Added
