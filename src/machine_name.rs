@@ -5,8 +5,8 @@ pub fn machine_name() -> String {
         return hostname;
     }
 
-    if let Some(os_version) = System::os_version() {
-        return format!("{} {}", System::distribution_id(), os_version);
+    if let Some(os_version_long) = System::long_os_version() {
+        return os_version_long;
     }
 
     format!("{} {}", std::env::consts::FAMILY, std::env::consts::ARCH)

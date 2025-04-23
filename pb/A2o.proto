@@ -23,16 +23,42 @@ message AuthRequestToken {
   string machine_name = 3;
   Version agent_version = 4;
 
-  // full list: https://doc.rust-lang.org/std/env/consts/constant.OS.html
-  // can be empty (e.g., for WASM)
-  string os_family = 11;
-  // full list: https://doc.rust-lang.org/std/env/consts/constant.OS.html
-  // can be empty (e.g., for WASM)
-  string os_name = 12;
-  string os_distro = 13;
-  string os_version = 14;
   // full list: https://doc.rust-lang.org/std/env/consts/constant.ARCH.html
-  string os_arch = 15;
+  string os_arch = 11;
+  // full list: https://doc.rust-lang.org/std/env/consts/constant.FAMILY.html
+  // can be empty (e.g., for WASM)
+  string os_family = 12;
+  // full list: https://doc.rust-lang.org/std/env/consts/constant.OS.html
+  // can be empty (e.g., for WASM)
+  string os_name = 13;
+  // In Linux, value of "ID" from /etc/os-release
+  // see https://docs.rs/sysinfo/latest/sysinfo/struct.System.html#method.distribution_id
+  string os_distro = 14;
+  // In Linux, value of "VERSION_ID" from /etc/os-release
+  // see https://docs.rs/sysinfo/latest/sysinfo/struct.System.html#method.os_version
+  string os_version = 15;
+  // https://docs.rs/sysinfo/latest/sysinfo/struct.System.html#method.long_os_version
+  string os_version_long = 16;
+}
+
+enum MetricType {
+  METRIC_UNKNOWN = 0;
+
+  METRIC_CPU_GLOBAL_PERCENT = 11;
+
+  METRIC_MEMORY_TOTAL_BYTES = 21;
+  METRIC_MEMORY_USED_BYTES = 22;
+}
+
+// Why not separate messages like "CpuMetric", "DiskMetric" etc.?
+// The intention is keep the schema as flat as possible to keep it simple (from communication to storage to querying).
+message MetricEvent {
+  MetricType metric_type = 1;
+  uint64 metric_at_ts = 2;
+  // for CPUs, label can be "CPU 0", "CPU 1" etc.
+  // for disks, label can be disk mount point etc.
+  string label = 3;
+  double value = 4;
 }
 
 message RunlogStarted {
@@ -56,26 +82,6 @@ message RunlogFinished {
   uint64 runlog_id = 1;
   uint64 finished_at_ts = 2;
   int32 exit_code = 3;
-}
-
-enum MetricType {
-  METRIC_UNKNOWN = 0;
-
-  METRIC_CPU_GLOBAL_PERCENT = 11;
-
-  METRIC_MEMORY_TOTAL_BYTES = 21;
-  METRIC_MEMORY_USED_BYTES = 22;
-}
-
-// Why not separate messages like "CpuMetric", "DiskMetric" etc.?
-// The intention is keep the schema as flat as possible to keep it simple (from communication to storage to querying).
-message MetricEvent {
-  MetricType metric_type = 1;
-  uint64 metric_at_ts = 2;
-  // for CPUs, label can be "CPU 0", "CPU 1" etc.
-  // for disks, label can be disk mount point etc.
-  string label = 3;
-  double value = 4;
 }
 
 enum OutputStreamType {
