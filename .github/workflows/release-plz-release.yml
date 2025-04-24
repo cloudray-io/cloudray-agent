@@ -54,7 +54,7 @@ jobs:
           - name: x86_64-pc-windows-msvc
             os: windows-2025
           - name: aarch64-pc-windows-msvc
-            os: windows-latest
+            os: windows-11-arm
 
     runs-on: ${{ matrix.target.os }}
 
