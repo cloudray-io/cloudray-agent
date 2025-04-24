@@ -1,7 +1,3 @@
-#[cfg(target_os = "linux")]
-use std::fs;
-#[cfg(any(target_os = "macos", target_os = "windows"))]
-use std::process::Command;
 use sysinfo::System;
 
 #[allow(dead_code)]
@@ -34,6 +30,7 @@ pub fn device_uid_as_string() -> Option<String> {
 pub fn device_uid() -> Option<(DeviceUidType, String)> {
     #[cfg(target_os = "linux")]
     {
+        use std::fs;
         if let Ok(id) = fs::read_to_string("/etc/machine-id") {
             let id = id.trim();
             if !id.is_empty() {
@@ -64,6 +61,7 @@ pub fn device_uid() -> Option<(DeviceUidType, String)> {
 
     #[cfg(target_os = "macos")]
     {
+        use std::process::Command;
         if let Ok(output) = Command::new("ioreg")
             .args(&["-rd1", "-c", "IOPlatformExpertDevice"])
             .output()
@@ -84,6 +82,7 @@ pub fn device_uid() -> Option<(DeviceUidType, String)> {
 
     #[cfg(target_os = "windows")]
     {
+        use std::process::Command;
         if let Ok(output) = Command::new("wmic")
             .args(&["csproduct", "get", "uuid"])
             .output()

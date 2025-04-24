@@ -1,6 +1,7 @@
 use crate::panic_error::PanicError;
 use std::fs::OpenOptions;
 
+#[cfg(unix)]
 pub fn daemonise() -> Result<(), PanicError> {
     use daemonize::Daemonize;
 
@@ -32,4 +33,10 @@ pub fn daemonise() -> Result<(), PanicError> {
             Err(PanicError::RuntimeError(e.to_string()))
         }
     }
+}
+
+#[cfg(not(unix))]
+pub fn daemonise() -> Result<(), PanicError> {
+    eprintln!("-d option is not supported on this platform. Running in foreground.");
+    Ok(())
 }
