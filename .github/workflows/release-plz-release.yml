@@ -40,6 +40,7 @@ jobs:
     if: needs.release-plz-release.outputs.releases != '[]'
     name: ${{ matrix.target.name }} / ${{ matrix.release.tag }} / ${{ matrix.release.package_name }}
     strategy:
+      fail-fast: false # Don't cancel all jobs if one fails
       matrix:
         release: ${{ fromJSON(needs.release-plz-release.outputs.releases) }}
         target:
