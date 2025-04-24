@@ -37,6 +37,5 @@ pub fn daemonise() -> Result<(), PanicError> {
 
 #[cfg(not(unix))]
 pub fn daemonise() -> Result<(), PanicError> {
-    eprintln!("-d option is not supported on this platform. Running in foreground.");
-    Ok(())
+    PanicError::RuntimeError("-d option is not supported on this platform")
 }
