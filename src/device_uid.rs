@@ -1,5 +1,4 @@
-#[cfg(any(target_os = "macos", target_os = "windows"))]
-use std::env;
+#[cfg(target_os = "linux")]
 use std::fs;
 #[cfg(any(target_os = "macos", target_os = "windows"))]
 use std::process::Command;
