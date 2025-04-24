@@ -53,5 +53,4 @@ jobs:
         run: ${{ matrix.setup }}
         shell: bash
 
-      - name: Build
-        run: cargo build --verbose --target ${{ matrix.target }}
+      - run: cargo build --verbose --target ${{ matrix.target }}
