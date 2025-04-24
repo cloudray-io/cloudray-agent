@@ -1,9 +1,9 @@
 use crate::panic_error::PanicError;
-use std::fs::OpenOptions;
 
 #[cfg(unix)]
 pub fn daemonise() -> Result<(), PanicError> {
     use daemonize::Daemonize;
+    use std::fs::OpenOptions;
 
     let log_path = "/tmp/cloudray-agent.log";
 
