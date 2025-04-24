@@ -11,7 +11,7 @@ env:
   RUSTFLAGS: "-Dwarnings"
 
 jobs:
-  build:
+  test:
     name: ${{ matrix.target }} / ${{ matrix.os }}
     strategy:
       fail-fast: false # Don't cancel all jobs if one fails
@@ -57,5 +57,6 @@ jobs:
         run: ${{ matrix.setup }}
         shell: bash
 
+      # Run build & test separately so that their time can be measured individually
       - run: cargo build --verbose --target ${{ matrix.target }}
       - run: cargo test --verbose --target ${{ matrix.target }}
