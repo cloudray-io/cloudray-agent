@@ -48,6 +48,8 @@ jobs:
         with:
           targets: ${{ matrix.target }}
       - uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: "v0-${{ matrix.target }}"
 
       - name: Install dependencies
         if: matrix.setup != null && startsWith(matrix.os, 'ubuntu')
