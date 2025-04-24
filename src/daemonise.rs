@@ -37,5 +37,7 @@ pub fn daemonise() -> Result<(), PanicError> {
 
 #[cfg(not(unix))]
 pub fn daemonise() -> Result<(), PanicError> {
-    PanicError::RuntimeError("-d option is not supported on this platform")
+    Err(PanicError::RuntimeError(
+        "-d option is not supported on this platform".to_string(),
+    ))
 }
