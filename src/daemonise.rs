@@ -1,8 +1,9 @@
 use crate::panic_error::PanicError;
-use std::fs::OpenOptions;
 
+#[cfg(unix)]
 pub fn daemonise() -> Result<(), PanicError> {
     use daemonize::Daemonize;
+    use std::fs::OpenOptions;
 
     let log_path = "/tmp/cloudray-agent.log";
 
@@ -32,4 +33,11 @@ pub fn daemonise() -> Result<(), PanicError> {
             Err(PanicError::RuntimeError(e.to_string()))
         }
     }
+}
+
+#[cfg(not(unix))]
+pub fn daemonise() -> Result<(), PanicError> {
+    Err(PanicError::RuntimeError(
+        "-d option is not supported on this platform".to_string(),
+    ))
 }

@@ -11,17 +11,52 @@ env:
   RUSTFLAGS: "-Dwarnings"
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  test:
+    name: ${{ matrix.target }} / ${{ matrix.os }}
+    strategy:
+      fail-fast: false # Don't cancel all jobs if one fails
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-24.04
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-24.04-arm64
+
+          - target: x86_64-unknown-linux-musl
+            os: ubuntu-24.04
+            setup: |
+              sudo apt-get install -y musl-tools
+          - target: aarch64-unknown-linux-musl
+            os: ubuntu-24.04-arm64
+            setup: |
+              sudo apt-get install -y musl-tools
+
+          - target: x86_64-apple-darwin
+            os: macos-13
+          - target: aarch64-apple-darwin
+            os: macos-15
+
+          - target: x86_64-pc-windows-msvc
+            os: windows-2025
+          - target: aarch64-pc-windows-msvc
+            os: windows-11-arm
+
+    runs-on: ${{ matrix.os }}
+
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/cache@v4
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          targets: ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: "v0-${{ matrix.target }}"
+
+      - name: Install dependencies
+        if: matrix.setup != null && startsWith(matrix.os, 'ubuntu')
+        run: ${{ matrix.setup }}
+        shell: bash
+
       # Run build & test separately so that their time can be measured individually
-      - run: cargo build --verbose
-      - run: cargo test --verbose
+      - run: cargo build --verbose --target ${{ matrix.target }}
+      - run: cargo test --verbose --target ${{ matrix.target }}

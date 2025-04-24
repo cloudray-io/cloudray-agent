@@ -12,7 +12,7 @@ on:
 jobs:
   release-plz-release:
     name: Release-plz release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     outputs:
       releases: ${{ steps.release-plz.outputs.releases }}
@@ -40,6 +40,7 @@ jobs:
     if: needs.release-plz-release.outputs.releases != '[]'
     name: ${{ matrix.target.name }} / ${{ matrix.release.tag }} / ${{ matrix.release.package_name }}
     strategy:
+      fail-fast: false # Don't cancel all jobs if one fails
       matrix:
         release: ${{ fromJSON(needs.release-plz-release.outputs.releases) }}
         target:
@@ -54,7 +55,7 @@ jobs:
           - name: x86_64-pc-windows-msvc
             os: windows-2025
           - name: aarch64-pc-windows-msvc
-            os: windows-latest
+            os: windows-11-arm
 
     runs-on: ${{ matrix.target.os }}
 
