@@ -40,6 +40,7 @@ try_version() {
     local download_url="${REPO_BASE_URL}/${BINARY_NAME}-v${version}/${archive}"
 
     echo "Trying to download ${BINARY_NAME} ${version}..."
+    echo "Downloading from ${download_url}..."
     if curl -sSfL "${download_url}" -o "${archive}" 2>/dev/null; then
         echo "Download successful for version ${version}. Extracting..."
         if tar -xzf "${archive}"; then
