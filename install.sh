@@ -37,7 +37,7 @@ get_installed_version() {
 try_version() {
     local version="$1"
     local archive="$2"
-    local download_url="${REPO_BASE_URL}/${BINARY_NAME}-v${version}/${archive}"
+    local download_url="${REPO_BASE_URL}/v${version}/${archive}"
 
     echo "Trying to download ${BINARY_NAME} ${version}..."
     echo "Downloading from ${download_url}..."
