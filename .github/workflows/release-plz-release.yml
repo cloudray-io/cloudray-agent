@@ -38,7 +38,7 @@ jobs:
   upload-binaries:
     needs: release-plz-release
     if: needs.release-plz-release.outputs.releases != '[]'
-    name: ${{ matrix.target.name }} / ${{ matrix.release.tag }} / ${{ matrix.release.package_name }}
+    name: ${{ matrix.target.name }} / ${{ matrix.release.tag }} / ${{ matrix.target.os }}
     strategy:
       fail-fast: false # Don't cancel all jobs if one fails
       matrix:
@@ -47,7 +47,7 @@ jobs:
           - name: x86_64-unknown-linux-musl
             os: ubuntu-24.04
           - name: aarch64-unknown-linux-musl
-            os: ubuntu-24.04-arm
+            os: ubuntu-24.04
           - name: x86_64-apple-darwin
             os: macos-13
           - name: aarch64-apple-darwin
