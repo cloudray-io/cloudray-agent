@@ -1,0 +1,134 @@
+#!/usr/bin/env bash
+#
+# Usage:
+#   curl -sSfL https://cloudray.io/install.sh | bash
+
+set -euo pipefail
+
+LATEST_VERSION_URL="https://raw.githubusercontent.com/cloudray-io/cloudray-agent/refs/heads/main/latest.txt"
+REPO_BASE_URL="https://github.com/cloudray-io/cloudray-agent/releases/download"
+BINARY_NAME="cloudray-agent"
+DEFAULT_INSTALL_DIR="/usr/bin"
+INSTALL_DIR="${INSTALL_DIR:-$DEFAULT_INSTALL_DIR}"
+
+get_architecture() {
+    local arch="$(uname -m)"
+    case "${arch}" in
+        x86_64)
+            echo "${BINARY_NAME}-x86_64-unknown-linux-musl.tar.gz"
+            ;;
+        aarch64|arm64)
+            echo "${BINARY_NAME}-aarch64-unknown-linux-musl.tar.gz"
+            ;;
+        *)
+            echo ""
+            return 1
+            ;;
+    esac
+}
+
+get_installed_version() {
+    local install_dir="$1"
+    if [ -x "${install_dir}/${BINARY_NAME}" ]; then
+        "${install_dir}/${BINARY_NAME}" --version 2>/dev/null | awk '{print $2}'
+    fi
+}
+
+try_version() {
+    local version="$1"
+    local archive="$2"
+    local download_url="${REPO_BASE_URL}/${BINARY_NAME}-v${version}/${archive}"
+
+    echo "Trying to download ${BINARY_NAME} ${version}..."
+    if curl -sSfL "${download_url}" -o "${archive}" 2>/dev/null; then
+        echo "Download successful for version ${version}. Extracting..."
+        if tar -xzf "${archive}"; then
+            rm -f "${archive}"
+            return 0
+        fi
+        rm -f "${archive}"
+    fi
+    return 1
+}
+
+install_binary() {
+    local install_dir="$1"
+    local version="$2"
+
+    if [ ! -w "${install_dir}" ]; then
+        echo "You do not have write permissions to '${install_dir}'."
+        echo "To perform a system-wide install, re-run with sudo:"
+        echo "  sudo curl -sSfL https://cloudray.io/install.sh | bash"
+        echo
+        echo "Or specify a custom installation directory via the INSTALL_DIR environment variable, for example:"
+        echo "  curl -sSfL https://cloudray.io/install.sh | INSTALL_DIR=\"\$HOME/bin\" bash"
+        rm -f "${BINARY_NAME}"
+        return 1
+    fi
+
+    echo "Installing ${BINARY_NAME} version ${version} to '${install_dir}'..."
+    mv "${BINARY_NAME}" "${install_dir}/${BINARY_NAME}"
+    chmod +x "${install_dir}/${BINARY_NAME}"
+    return 0
+}
+
+print_success() {
+    local install_dir="$1"
+    echo "Installation successful!"
+    echo "To verify, run:"
+    echo "  ${install_dir}/${BINARY_NAME} --version"
+    echo
+    echo "To uninstall, just remove the binary (no additional files or configurations are left behind)"
+    echo "  rm ${install_dir}/${BINARY_NAME}"
+    echo
+    echo "Learn more at https://cloudray.io"
+}
+
+main() {
+    echo "Checking available ${BINARY_NAME} versions..."
+
+    local versions=($(curl -sSfL "${LATEST_VERSION_URL}" | tr -d '\r'))
+    if [ ${#versions[@]} -eq 0 ]; then
+        echo "Unable to fetch versions from ${LATEST_VERSION_URL}. Please check your internet connection or try again."
+        exit 1
+    fi
+    echo "Available versions: ${versions[*]}"
+
+    local installed_version="$(get_installed_version "${INSTALL_DIR}")"
+    if [ -n "${installed_version}" ]; then
+        echo "Installed version: ${installed_version}"
+    fi
+
+    local archive
+    archive="$(get_architecture)" || {
+        echo "Unsupported architecture: $(uname -m)"
+        echo "Please download and install ${BINARY_NAME} manually for your system."
+        exit 1
+    }
+
+    local success=0
+    local version
+    for version in "${versions[@]}"; do
+        if [ "${installed_version}" = "${version}" ]; then
+            echo "${BINARY_NAME} version ${version} is already installed. No action needed."
+            exit 0
+        fi
+
+        if try_version "${version}" "${archive}"; then
+            success=1
+            break
+        else
+            echo "Version ${version} not available, trying next version..."
+        fi
+    done
+
+    if [ ${success} -eq 0 ]; then
+        echo "Failed to download any version. Please check your internet connection or try again later."
+        exit 1
+    fi
+
+    install_binary "${INSTALL_DIR}" "${version}" || exit 1
+    print_success "${INSTALL_DIR}"
+}
+
+main
