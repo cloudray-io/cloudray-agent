@@ -59,7 +59,7 @@ install_binary() {
     if [ ! -w "${install_dir}" ]; then
         echo "You do not have write permissions to '${install_dir}'."
         echo "To perform a system-wide install, re-run with sudo:"
-        echo "  sudo curl -sSfL https://cloudray.io/install.sh | bash"
+        echo "  curl -sSfL https://cloudray.io/install.sh | sudo bash"
         echo
         echo "Or specify a custom installation directory via the INSTALL_DIR environment variable, for example:"
         echo "  curl -sSfL https://cloudray.io/install.sh | INSTALL_DIR=\"\$HOME/bin\" bash"
