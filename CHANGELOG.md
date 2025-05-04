@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.6](https://github.com/cloudray-io/cloudray-agent/compare/v0.0.5...v0.0.6) - 2025-05-04
+
+### Fixed
+
+- Don't let `runlog_run` task block the `report` task. ([#17](https://github.com/cloudray-io/cloudray-agent/pull/17))
+- Support compilation on musl target. ([#24](https://github.com/cloudray-io/cloudray-agent/pull/24))
+
+### Other
+
+- Fix OS for ARM tests. ([#28](https://github.com/cloudray-io/cloudray-agent/pull/28))
+- Create an installation script. ([#27](https://github.com/cloudray-io/cloudray-agent/pull/27))
+- Build on all supported platforms. ([#26](https://github.com/cloudray-io/cloudray-agent/pull/26))
+
 ## [0.0.5](https://github.com/cloudray-io/cloudray-agent/compare/v0.0.4...v0.0.5) - 2025-04-23
 
 ### Added
