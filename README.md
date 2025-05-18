@@ -26,9 +26,13 @@ sudo cloudray-agent -d --reg-code <REG_CODE>
    ```
 3. **Build the agent:**
    ```bash
-   cargo build
+   cargo build --release
    ```
-4. **Run the agent:**
+4. **To test installing service:**
    ```bash
-   RUST_LOG=debug cargo run -- --reg-code <REG_CODE>
+   sudo ./target/release/cloudray-agent install-service <REG_CODE>
+   ```
+5. **To run directly:**
+   ```bash
+   ./target/release/cloudray-agent run
    ```
