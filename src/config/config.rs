@@ -1,4 +1,4 @@
-use crate::args::Args;
+use crate::config::args::{Args, Commands};
 use crate::types::AgentToken;
 use clap::Parser;
 use std::sync::LazyLock;
@@ -15,6 +15,8 @@ pub const REPORT_EVERY: Duration = Duration::from_secs(60);
 pub const REPORT_CHECK_EVERY: Duration = Duration::from_secs(2);
 pub const RUNLOG_RUN_TIMEOUT: Duration = Duration::from_secs(3600);
 
+pub const DEFAULT_ENV_FILE_PATH: &str = "/etc/cloudray-agent/environment";
+
 static AGENT_TOKEN: LazyLock<RwLock<Option<AgentToken>>> = LazyLock::new(|| RwLock::new(None));
 static SEND_REPORT_AT: LazyLock<RwLock<Instant>> = LazyLock::new(|| RwLock::new(Instant::now()));
 
@@ -25,6 +27,8 @@ pub static CONFIG: LazyLock<Config> = LazyLock::new(|| {
 
 pub struct Config {
     args: Args,
+    reg_code: Option<String>,
+    origin_host: String,
     origin_client: reqwest::Client,
 }
 
@@ -37,14 +41,30 @@ impl Config {
                 error!("Failed to create custom reqwest::Client, falling back to default client");
                 reqwest::Client::new()
             });
+
+        let (reg_code, origin_host) = match &args.command {
+            Commands::InstallService {
+                reg_code,
+                common_args,
+                ..
+            } => (Some(reg_code.clone()), common_args.origin_host.clone()),
+            Commands::Run {
+                reg_code,
+                common_args,
+                ..
+            } => (reg_code.clone(), common_args.origin_host.clone()),
+        };
+
         Self {
             args,
+            reg_code,
+            origin_host: origin_host.unwrap_or(DEFAULT_ORIGIN_HOST.to_string()),
             origin_client,
         }
     }
 
-    pub fn reg_code(&self) -> &String {
-        &self.args.reg_code
+    pub fn reg_code(&self) -> Option<String> {
+        self.reg_code.clone()
     }
 
     // Initialise the reqwest::Client only once and reuse it for each request for following benefits:
@@ -56,12 +76,7 @@ impl Config {
     }
 
     pub fn origin_host(&self) -> String {
-        let default_host = &DEFAULT_ORIGIN_HOST.to_string();
-        self.args
-            .origin_host
-            .as_ref()
-            .unwrap_or(default_host)
-            .to_string()
+        self.origin_host.clone()
     }
 
     pub fn use_https(&self) -> bool {
@@ -81,17 +96,8 @@ impl Config {
         format!("{}://{}/agent/v1/report", scheme, host)
     }
 
-    #[inline]
-    pub fn is_unix(&self) -> bool {
-        cfg!(unix)
-    }
-
-    pub fn wants_daemon(&self) -> bool {
-        self.args.daemon
-    }
-
-    pub fn can_daemon(&self) -> bool {
-        self.is_unix()
+    pub fn command(&self) -> &Commands {
+        &self.args.command
     }
 }
 
