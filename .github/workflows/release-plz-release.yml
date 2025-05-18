@@ -52,10 +52,6 @@ jobs:
             os: macos-13
           - name: aarch64-apple-darwin
             os: macos-15
-          - name: x86_64-pc-windows-msvc
-            os: windows-2025
-          - name: aarch64-pc-windows-msvc
-            os: windows-11-arm
 
     runs-on: ${{ matrix.target.os }}
 
