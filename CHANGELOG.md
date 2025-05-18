@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0](https://github.com/cloudray-io/cloudray-agent/compare/v0.1.0...v0.2.0) - 2025-05-18
+
+### Other
+
+- [**breaking**] Remove Windows builds. ([#35](https://github.com/cloudray-io/cloudray-agent/pull/35))
+- Make install.sh work on Mac. ([#32](https://github.com/cloudray-io/cloudray-agent/pull/32))
+
 ## [0.1.0](https://github.com/cloudray-io/cloudray-agent/compare/v0.0.6...v0.1.0) - 2025-05-04
 
 ### Other
