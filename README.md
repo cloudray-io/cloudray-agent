@@ -1,22 +1,18 @@
 # CloudRay Agent
 
-[![Licence: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Licence: MIT](https://img.shields.io/badge/Licence-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Repository](https://img.shields.io/badge/GitHub-Repo-blue.svg)](https://github.com/cloudray-io/cloudray-agent)
 
-Agent for CloudRay, a server management & monitoring service. Learn more at [https://cloudray.io](https://cloudray.io).
+Agent for [CloudRay](https://cloudray.io), a server management & monitoring service.
 
-This agent runs on your server, collects metrics, manages tasks, and communicates with the CloudRay platform.
+For detailed information and installation instructions please visit the [Agent Docs](https://cloudray.io/docs/agent).
 
-## Installation
+## Building from Source
 
-```bash
-curl -sSfL https://cloudray.io/install.sh | bash
-# Run the cloudray-agent in the background.
-# You can find the value of REG_CODE in your CloudRay project at https://cloudray.io
-sudo cloudray-agent -d --reg-code <REG_CODE>
-```
-
-## Building for Development
+> [!NOTE]
+> These instructions are intended for developers building the agent from source.
+> If you're looking to install the agent, please follow
+> the [official installation guide](https://cloudray.io/docs/agent).
 
 1. Install Rust from https://www.rust-lang.org/tools/install
 2. **Clone the repository:**
@@ -26,9 +22,13 @@ sudo cloudray-agent -d --reg-code <REG_CODE>
    ```
 3. **Build the agent:**
    ```bash
-   cargo build
+   cargo build --release
    ```
-4. **Run the agent:**
+4. **To test installing service:**
    ```bash
-   RUST_LOG=debug cargo run -- --reg-code <REG_CODE>
+   sudo ./target/release/cloudray-agent install-service --reg-code <REG_CODE>
+   ```
+5. **To run directly:**
+   ```bash
+   ./target/release/cloudray-agent run
    ```

@@ -6,6 +6,7 @@ use crate::generated::pb::o2a::O2aRoot;
 use crate::machine_name::machine_name;
 use crate::net::receive::receive_messages;
 use crate::version::agent_version_as_pb;
+use anyhow::anyhow;
 use sysinfo::System;
 
 pub async fn handshake() -> anyhow::Result<O2aRoot> {
@@ -13,7 +14,9 @@ pub async fn handshake() -> anyhow::Result<O2aRoot> {
     let mut payloads = Vec::new();
 
     let payload = AuthRequestToken {
-        reg_code: CONFIG.reg_code().clone(),
+        reg_code: CONFIG
+            .reg_code()
+            .ok_or(anyhow!("Registration code is not set."))?,
         machine_uid: device_uid_as_string().unwrap_or_default(),
         machine_name: machine_name(),
         agent_version: Some(agent_version_as_pb()),

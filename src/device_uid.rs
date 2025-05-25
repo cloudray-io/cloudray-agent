@@ -80,22 +80,6 @@ pub fn device_uid() -> Option<(DeviceUidType, String)> {
         }
     }
 
-    #[cfg(target_os = "windows")]
-    {
-        use std::process::Command;
-        if let Ok(output) = Command::new("wmic")
-            .args(&["csproduct", "get", "uuid"])
-            .output()
-        {
-            let stdout = String::from_utf8_lossy(&output.stdout);
-            for line in stdout.lines().skip(1) {
-                let id = line.trim();
-                if !id.is_empty() {
-                    return Some((DeviceUidType::ProductUuid, id.to_string()));
-                }
-            }
-        }
-    }
 
     if let Ok(Some(mac)) = mac_address::get_mac_address() {
         return Some((DeviceUidType::MacAddress, mac.to_string()));
