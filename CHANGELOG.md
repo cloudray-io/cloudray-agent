@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0](https://github.com/cloudray-io/cloudray-agent/compare/v0.2.0...v0.3.0) - 2025-05-25
+
+### Added
+
+- [**breaking**] Introduce `install-service` subcommand. ([#34](https://github.com/cloudray-io/cloudray-agent/pull/34))
+
 ## [0.2.0](https://github.com/cloudray-io/cloudray-agent/compare/v0.1.0...v0.2.0) - 2025-05-18
 
 ### Other
