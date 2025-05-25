@@ -100,12 +100,12 @@ print_success() {
     echo "Installation successful!"
     echo
     echo "To register, run:"
-    echo "  cloudray-agent register REG_CODE"
+    echo "  sudo cloudray-agent install-service --reg-code REG_CODE"
     echo
     echo "To uninstall, run:"
-    echo "  cloudray-agent uninstall"
+    echo "  sudo cloudray-agent uninstall"
     echo
-    echo "Learn more at https://cloudray.io"
+    echo "Learn more at https://cloudray.io/docs/agent"
 }
 
 main() {
@@ -136,7 +136,6 @@ main() {
         echo "Unable to fetch versions from ${LATEST_VERSION_URL}. Please check your internet connection or try again."
         exit 1
     fi
-    echo "Available versions: ${versions[*]}"
 
     local archive
     archive="$(get_architecture)" || {
