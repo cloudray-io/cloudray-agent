@@ -43,6 +43,8 @@ remove_binary() {
         rm -f "${install_dir}/${BINARY_NAME}"
     else
         echo "${BINARY_NAME} binary not found in ${install_dir}."
+        echo "If the binary is installed in a different location, please specify the directory using the INSTALL_DIR environment variable:"
+        echo "  curl -sSfL https://cloudray.io/uninstall.sh | INSTALL_DIR=\"/path/to/binary\" sudo bash"
     fi
 }
 
@@ -94,12 +96,8 @@ main() {
         exit 1
     fi
 
-    # Remove binary
     remove_binary "${INSTALL_DIR}"
-
-    # Clean up environment files and directory
     cleanup_environment_files
-
     print_success
 }
 
