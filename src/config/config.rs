@@ -55,10 +55,18 @@ impl Config {
             } => (reg_code.clone(), common_args.origin_host.clone()),
         };
 
+        let mut origin_host = origin_host.unwrap_or(DEFAULT_ORIGIN_HOST.to_string());
+
+        origin_host = if origin_host.starts_with("http://") || origin_host.starts_with("https://") {
+            origin_host
+        } else {
+            format!("https://{}", origin_host)
+        };
+
         Self {
             args,
             reg_code,
-            origin_host: origin_host.unwrap_or(DEFAULT_ORIGIN_HOST.to_string()),
+            origin_host,
             origin_client,
         }
     }
@@ -79,21 +87,25 @@ impl Config {
         self.origin_host.clone()
     }
 
-    pub fn use_https(&self) -> bool {
-        !self.origin_host().starts_with("localhost")
-    }
-
     #[allow(dead_code)]
     pub fn cable_endpoint(&self) -> String {
         let host = self.origin_host();
-        let scheme = if self.use_https() { "wss" } else { "ws" };
-        format!("{}://{}/cable", scheme, host)
+        if host.starts_with("http://") {
+            host.replace("http://", "ws://") + "/cable"
+        } else if host.starts_with("https://") {
+            host.replace("https://", "wss://") + "/cable"
+        } else {
+            format!("wss://{}/cable", host)
+        }
     }
 
     pub fn agent_v1_endpoint(&self) -> String {
         let host = self.origin_host();
-        let scheme = if self.use_https() { "https" } else { "http" };
-        format!("{}://{}/agent/v1/report", scheme, host)
+        if host.starts_with("http://") || host.starts_with("https://") {
+            format!("{}/agent/v1/report", host)
+        } else {
+            format!("https://{}/agent/v1/report", host)
+        }
     }
 
     pub fn command(&self) -> &Commands {
@@ -124,4 +136,122 @@ pub async fn set_send_report_at_now() {
         return;
     }
     *SEND_REPORT_AT.write().await = Instant::now();
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::config::args::{Args, Commands, CommonArgs};
+
+    #[test]
+    fn test_origin_host_with_scheme() {
+        let args = Args {
+            command: Commands::Run {
+                reg_code: None,
+                common_args: CommonArgs {
+                    origin_host: Some("http://example.com".to_string()),
+                },
+            },
+        };
+        let config = Config::new(args);
+        assert_eq!(config.origin_host(), "http://example.com");
+    }
+
+    #[test]
+    fn test_origin_host_with_scheme_and_port() {
+        let args = Args {
+            command: Commands::Run {
+                reg_code: None,
+                common_args: CommonArgs {
+                    origin_host: Some("http://example.com:3000".to_string()),
+                },
+            },
+        };
+        let config = Config::new(args);
+        assert_eq!(config.origin_host(), "http://example.com:3000");
+    }
+
+    #[test]
+    fn test_origin_host_without_scheme() {
+        let args = Args {
+            command: Commands::Run {
+                reg_code: None,
+                common_args: CommonArgs {
+                    origin_host: Some("example.com".to_string()),
+                },
+            },
+        };
+        let config = Config::new(args);
+        assert_eq!(config.origin_host(), "https://example.com");
+    }
+
+    #[test]
+    fn test_origin_host_with_https_scheme() {
+        let args = Args {
+            command: Commands::Run {
+                reg_code: None,
+                common_args: CommonArgs {
+                    origin_host: Some("https://example.com".to_string()),
+                },
+            },
+        };
+        let config = Config::new(args);
+        assert_eq!(config.origin_host(), "https://example.com");
+    }
+
+    #[test]
+    fn test_cable_endpoint_with_http_scheme() {
+        let args = Args {
+            command: Commands::Run {
+                reg_code: None,
+                common_args: CommonArgs {
+                    origin_host: Some("http://example.com".to_string()),
+                },
+            },
+        };
+        let config = Config::new(args);
+        assert_eq!(config.cable_endpoint(), "ws://example.com/cable");
+    }
+
+    #[test]
+    fn test_cable_endpoint_with_http_scheme_and_port() {
+        let args = Args {
+            command: Commands::Run {
+                reg_code: None,
+                common_args: CommonArgs {
+                    origin_host: Some("http://example.com:3000".to_string()),
+                },
+            },
+        };
+        let config = Config::new(args);
+        assert_eq!(config.cable_endpoint(), "ws://example.com:3000/cable");
+    }
+
+    #[test]
+    fn test_cable_endpoint_with_https_scheme() {
+        let args = Args {
+            command: Commands::Run {
+                reg_code: None,
+                common_args: CommonArgs {
+                    origin_host: Some("https://example.com".to_string()),
+                },
+            },
+        };
+        let config = Config::new(args);
+        assert_eq!(config.cable_endpoint(), "wss://example.com/cable");
+    }
+
+    #[test]
+    fn test_cable_endpoint_without_scheme() {
+        let args = Args {
+            command: Commands::Run {
+                reg_code: None,
+                common_args: CommonArgs {
+                    origin_host: Some("example.com".to_string()),
+                },
+            },
+        };
+        let config = Config::new(args);
+        assert_eq!(config.cable_endpoint(), "wss://example.com/cable");
+    }
 }
