@@ -103,7 +103,7 @@ print_success() {
     echo "  sudo cloudray-agent install-service --reg-code REG_CODE"
     echo
     echo "To uninstall, run:"
-    echo "  sudo cloudray-agent uninstall"
+    echo "  curl -sSfL https://cloudray.io/uninstall.sh | sudo bash"
     echo
     echo "Learn more at https://cloudray.io/docs/agent"
 }
