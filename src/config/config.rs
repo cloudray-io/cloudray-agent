@@ -11,7 +11,9 @@ const DEFAULT_ORIGIN_HOST: &str = "api.cloudray.io";
 pub const METRICS_CPU_SAMPLE_EVERY: Duration = Duration::from_secs(5);
 pub const METRICS_CPU_MAX_SAMPLES: usize = 12;
 pub const METRICS_COLLECT_EVERY: Duration = Duration::from_secs(60);
-pub const REPORT_EVERY: Duration = Duration::from_secs(60);
+/// Default interval at which report is sent to the Origin. Some tasks e.g., runlog outputs may expedite this.
+pub const REPORT_EVERY: Duration = Duration::from_secs(5);
+/// Interval at which report is checked to see if it should be sent.
 pub const REPORT_CHECK_EVERY: Duration = Duration::from_secs(2);
 pub const RUNLOG_RUN_TIMEOUT: Duration = Duration::from_secs(3600);
 
