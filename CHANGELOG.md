@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- [**breaking**] Decrease the report interval from 60 seconds to 5 seconds. ([#40](https://github.com/cloudray-io/cloudray-agent/pull/40))
+- Decrease the report interval from 60 seconds to 5 seconds. ([#40](https://github.com/cloudray-io/cloudray-agent/pull/40))
 - Add uninstall.sh script. ([#39](https://github.com/cloudray-io/cloudray-agent/pull/39))
 
 ### Fixed
