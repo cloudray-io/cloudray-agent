@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0](https://github.com/cloudray-io/cloudray-agent/compare/v0.3.0...v0.4.0) - 2025-07-03
+
+### Added
+
+- Decrease the report interval from 60 seconds to 5 seconds. ([#40](https://github.com/cloudray-io/cloudray-agent/pull/40))
+- Add uninstall.sh script. ([#39](https://github.com/cloudray-io/cloudray-agent/pull/39))
+
+### Fixed
+
+- Let HTTP be used for origin host URL for testing. ([#37](https://github.com/cloudray-io/cloudray-agent/pull/37))
+
+### Other
+
+- Bump prost-build from 0.13.5 to 0.14.1 ([#44](https://github.com/cloudray-io/cloudray-agent/pull/44))
+- Bump prost from 0.13.5 to 0.14.1 ([#46](https://github.com/cloudray-io/cloudray-agent/pull/46))
+- Bump sysinfo from 0.34.2 to 0.35.2 ([#45](https://github.com/cloudray-io/cloudray-agent/pull/45))
+- Bump tokio-tungstenite from 0.26.2 to 0.27.0 ([#43](https://github.com/cloudray-io/cloudray-agent/pull/43))
+- Bump tokio from 1.44.2 to 1.45.1 ([#41](https://github.com/cloudray-io/cloudray-agent/pull/41))
+
 ## [0.3.0](https://github.com/cloudray-io/cloudray-agent/compare/v0.2.0...v0.3.0) - 2025-05-25
 
 ### Added
