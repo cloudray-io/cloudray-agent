@@ -91,9 +91,10 @@ enum OutputStreamType {
 
 message RunlogOutputFragment {
   uint64 runlog_id = 1;
-  uint64 output_at_ts = 2;
+  uint64 output_at_ts = 2 [deprecated = true];
   OutputStreamType stream_type = 3;
   bytes output_fragment = 4;
+  uint64 output_at_nano_ts = 5;
 }
 
 message A2oMessage {

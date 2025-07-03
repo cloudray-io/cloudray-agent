@@ -92,12 +92,15 @@ pub struct RunlogFinished {
 pub struct RunlogOutputFragment {
     #[prost(uint64, tag = "1")]
     pub runlog_id: u64,
+    #[deprecated]
     #[prost(uint64, tag = "2")]
     pub output_at_ts: u64,
     #[prost(enumeration = "OutputStreamType", tag = "3")]
     pub stream_type: i32,
     #[prost(bytes = "vec", tag = "4")]
     pub output_fragment: ::prost::alloc::vec::Vec<u8>,
+    #[prost(uint64, tag = "5")]
+    pub output_at_nano_ts: u64,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct A2oMessage {

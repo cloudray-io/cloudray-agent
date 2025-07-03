@@ -6,7 +6,7 @@ use crate::generated::pb::a2o::{
 };
 use crate::generated::pb::o2a::RunlogRun;
 use crate::message_queue::MessageQueue;
-use crate::utils::current_timestamp_secs;
+use crate::utils::{current_timestamp_nanos, current_timestamp_secs};
 use std::fs;
 use std::path::PathBuf;
 use std::process::Stdio;
@@ -115,6 +115,7 @@ where
         MessageQueue::push(A2oPayload::RunlogOutputFragment(RunlogOutputFragment {
             runlog_id,
             output_at_ts: current_timestamp_secs()?,
+            output_at_nano_ts: current_timestamp_nanos()?,
             stream_type: stream_type as i32,
             output_fragment: buffer[..n].to_vec(),
         }))
