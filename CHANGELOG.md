@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1](https://github.com/cloudray-io/cloudray-agent/compare/v0.4.0...v0.4.1) - 2025-11-16
+
+### Other
+
+- Bump actions/checkout from 4 to 5 ([#52](https://github.com/cloudray-io/cloudray-agent/pull/52))
+- Bump tokio-tungstenite from 0.27.0 to 0.28.0 ([#53](https://github.com/cloudray-io/cloudray-agent/pull/53))
+- Bump amannn/action-semantic-pull-request from 5 to 6 ([#51](https://github.com/cloudray-io/cloudray-agent/pull/51))
+- Bump tokio from 1.45.1 to 1.48.0 ([#54](https://github.com/cloudray-io/cloudray-agent/pull/54))
+
 ## [0.4.0](https://github.com/cloudray-io/cloudray-agent/compare/v0.3.0...v0.4.0) - 2025-07-03
 
 ### Added
